@@ -2,858 +2,348 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Language Flashcards</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0f172a" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-  <meta name="apple-mobile-web-app-title" content="Flashcards" />
-  <link rel="manifest" href="manifest.webmanifest" />
+  <meta name="apple-mobile-web-app-title" content="Language Flashcards" />
+  <title>Language Flashcards</title>
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="./icons/icon-192.png" />
   <style>
-    :root {
-      --bg: #f8fafc;
-      --card: #ffffff;
-      --muted: #64748b;
-      --text: #0f172a;
-      --border: #e2e8f0;
-      --accent: #0f172a;
-      --accent-2: #334155;
-      --success-bg: #ecfdf5;
-      --success-text: #047857;
-      --error-bg: #fef2f2;
-      --error-text: #b91c1c;
-      --shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
-      --radius: 20px;
-    }
-    * { box-sizing: border-box; }
-    html, body { margin: 0; padding: 0; font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: var(--text); background: var(--bg); }
-    body { min-height: 100vh; }
-    .app { max-width: 1200px; margin: 0 auto; padding: 12px; display: grid; gap: 16px; }
-    .card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); }
-    .pad { padding: 16px; }
-    .header { display: grid; gap: 12px; }
-    .title { font-size: 28px; font-weight: 800; letter-spacing: -0.02em; margin: 0; }
-    .subtitle { margin: 0; color: var(--muted); font-size: 14px; }
-    .row { display: flex; gap: 10px; flex-wrap: wrap; }
-    .row-between { display: flex; gap: 10px; justify-content: space-between; align-items: center; flex-wrap: wrap; }
-    .btn, .file-label, select, input, textarea {
-      border-radius: 16px;
-      border: 1px solid var(--border);
-      font: inherit;
-    }
-    .btn, .file-label {
-      min-height: 42px;
-      padding: 10px 14px;
-      background: white;
-      color: var(--text);
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      text-decoration: none;
-      user-select: none;
-    }
-    .btn.primary { background: var(--accent); color: white; border-color: var(--accent); }
-    .btn.ghost { background: transparent; }
-    .btn.full { width: 100%; }
-    input, textarea, select {
-      width: 100%;
-      padding: 12px 14px;
-      background: white;
-      color: var(--text);
-    }
-    textarea { resize: vertical; min-height: 120px; }
-    .grid { display: grid; gap: 12px; }
-    .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-    .grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-    .grid-5 { grid-template-columns: repeat(5, minmax(0, 1fr)); }
-    .language-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
-    .badge { display: inline-flex; align-items: center; gap: 6px; border-radius: 999px; padding: 6px 10px; border: 1px solid var(--border); font-size: 12px; background: #fff; }
-    .muted { color: var(--muted); }
-    .message { padding: 12px 14px; border-radius: 18px; font-size: 14px; }
-    .message.success { background: var(--success-bg); color: var(--success-text); border: 1px solid #a7f3d0; }
-    .message.error { background: var(--error-bg); color: var(--error-text); border: 1px solid #fecaca; }
-    .stats { display: grid; gap: 12px; }
-    .stat-num { font-size: 30px; font-weight: 800; }
-    .progress { margin-top: 8px; height: 8px; background: #e2e8f0; border-radius: 999px; overflow: hidden; }
-    .progress > div { height: 100%; background: var(--accent); }
-    .tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; padding: 6px; background: white; border: 1px solid var(--border); border-radius: 18px; }
-    .tab-btn { min-height: 42px; border: 0; border-radius: 14px; background: transparent; cursor: pointer; font: inherit; }
-    .tab-btn.active { background: var(--accent); color: white; }
-    .tab-panel { display: none; }
-    .tab-panel.active { display: block; }
-    .study-layout { display: grid; gap: 16px; }
-    .flashcard {
-      min-height: 300px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      padding: 20px;
-      border-radius: 28px;
-      border: 1px solid var(--border);
-      background: white;
-      cursor: pointer;
-      box-shadow: var(--shadow);
-    }
-    .flashcard-label { font-size: 12px; text-transform: uppercase; letter-spacing: .25em; color: #94a3b8; margin-bottom: 12px; }
-    .flashcard-main { font-size: clamp(28px, 5vw, 54px); font-weight: 800; line-height: 1.05; word-break: break-word; }
-    .hint { margin-top: 18px; color: #94a3b8; font-size: 14px; }
-    .collapsible-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; cursor: pointer; }
-    .collapsible-body { display: none; }
-    .collapsible.open .collapsible-body { display: block; }
-    .small { font-size: 13px; }
-    .card-list { display: grid; gap: 12px; }
-    .word-item { display: grid; gap: 12px; }
-    .actions-stack { display: grid; gap: 8px; }
-    .hidden-input { display: none; }
-    .sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
-    @media (min-width: 768px) {
-      .app { padding: 16px; gap: 20px; }
-      .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .study-layout { grid-template-columns: 1.15fr .85fr; }
-      .actions-stack { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    }
-    @media (min-width: 1024px) {
-      .app { padding: 24px; }
-      .header { grid-template-columns: 1fr auto; align-items: start; }
-      .stats { grid-template-columns: repeat(5, minmax(0, 1fr)); }
-      .actions-stack { grid-template-columns: unset; display: flex; flex-wrap: wrap; }
-      .word-item { grid-template-columns: 1fr auto; align-items: center; }
-    }
+    :root{--bg:#f8fafc;--card:#fff;--muted:#64748b;--text:#0f172a;--line:#e2e8f0;--accent:#0f172a;--soft:#f1f5f9;--good:#065f46;--goodBg:#ecfdf5;--warn:#92400e;--warnBg:#fffbeb;--bad:#b91c1c;--badBg:#fef2f2;--radius:22px;--shadow:0 2px 10px rgba(15,23,42,.06)}
+    *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font:16px/1.45 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif}
+    button,input,textarea,select{font:inherit} .app{max-width:1200px;margin:0 auto;padding:12px}.stack{display:flex;flex-direction:column;gap:14px}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)} .p{padding:14px}.p-lg{padding:18px}
+    .row{display:flex;gap:10px;align-items:center}.wrap{flex-wrap:wrap}.between{justify-content:space-between}.muted{color:var(--muted)}
+    .title{font-size:28px;font-weight:800;line-height:1.1}.subtitle{font-size:14px;color:var(--muted);margin-top:4px}
+    .btn{border:1px solid var(--line);background:#fff;color:var(--text);border-radius:18px;padding:10px 14px;min-height:42px;cursor:pointer}
+    .btn:hover{background:#f8fafc}.btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}.btn.full{width:100%}
+    .grid-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.stat h3{margin:0;font-size:13px;color:var(--muted);font-weight:600}.stat .n{font-size:28px;font-weight:800;margin-top:6px}
+    .progress{margin-top:10px;height:8px;border-radius:999px;background:#e2e8f0;overflow:hidden}.progress>div{height:100%;background:#0f172a}
+    .tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:6px}.tab{border:none;background:transparent;padding:10px 8px;border-radius:16px;cursor:pointer;font-weight:600;color:#475569}.tab.active{background:#0f172a;color:#fff}
+    .hidden{display:none !important}.section-grid{display:grid;gap:14px}.study-card{min-height:300px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:18px;border-radius:28px;border:1px solid var(--line);background:#fff;cursor:pointer}
+    .eyebrow{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:#94a3b8}.big{font-size:32px;font-weight:800;word-break:break-word}
+    .controls-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.answer-box{background:var(--soft);border:1px solid var(--line);border-radius:20px;padding:12px}
+    .feedback.good{background:var(--goodBg);color:var(--good)}.feedback.bad{background:var(--warnBg);color:var(--warn)}.feedback{padding:12px;border-radius:16px;font-size:14px}
+    .field{display:flex;flex-direction:column;gap:6px}.label{font-size:14px;font-weight:600}input,textarea,select{width:100%;border:1px solid var(--line);border-radius:18px;padding:12px 14px;background:#fff;color:var(--text)} textarea{min-height:120px;resize:vertical}
+    .hint{font-size:13px;color:var(--muted)}.langbar{display:flex;gap:8px;flex-wrap:wrap}.badge{display:inline-flex;align-items:center;border-radius:999px;padding:6px 10px;border:1px solid var(--line);font-size:12px;background:#fff;color:#334155}
+    .list{display:flex;flex-direction:column;gap:10px}.item{display:flex;flex-direction:column;gap:12px}.item-title{font-size:20px;font-weight:700;word-break:break-word}
+    .notice{padding:12px 14px;border-radius:18px;font-size:14px}.notice.good{background:var(--goodBg);color:var(--good);border:1px solid #bbf7d0}.notice.bad{background:var(--badBg);color:var(--bad);border:1px solid #fecaca}
+    .split{display:grid;gap:14px}.topline{display:flex;gap:8px;align-items:center;justify-content:space-between}.collapse-body{margin-top:12px}
+    @media (min-width:768px){.app{padding:18px}.grid-stats{grid-template-columns:repeat(5,1fr)}.section-grid{grid-template-columns:1.15fr .85fr}.split{grid-template-columns:1fr 1fr}.controls-grid{display:flex;flex-wrap:wrap}.big{font-size:48px}.title{font-size:34px}.item{flex-direction:row;justify-content:space-between;align-items:center}.item-actions{display:flex;gap:8px;flex-wrap:wrap}}
   </style>
 </head>
 <body>
-  <main class="app">
-    <section class="header">
-      <div>
-        <h1 class="title">Language Flashcards</h1>
-        <p class="subtitle">Готовая версия для GitHub Pages. Работает на iPhone, iPad и MacBook как PWA.</p>
-      </div>
-      <div class="language-tabs" id="languageTabs"></div>
-    </section>
+<div class="app stack">
+<div class="card p-lg">
+  <div class="row between wrap">
+    <div><div class="title">Language Flashcards</div><div class="subtitle">Карточки слов с несколькими языковыми наборами, установкой как приложение и локальным хранением.</div></div>
+    <div class="langbar" id="languageTabs"></div>
+  </div>
+  <div class="row" style="margin-top:10px"><select id="mobileLanguageSelect"></select></div>
+</div>
 
-    <section class="card collapsible" id="languagesSection">
-      <div class="pad collapsible-head" data-toggle="languagesSection">
-        <strong>Языки</strong>
-        <button class="btn ghost" type="button" id="toggleLanguagesBtn">Показать</button>
-      </div>
-      <div class="pad collapsible-body">
-        <form class="grid" id="addLanguageForm">
-          <div class="grid grid-4" style="gap:10px">
-            <input id="newLanguageName" placeholder="Название набора" />
-            <input id="newFrontLanguage" placeholder="Язык спереди" />
-            <input id="newBackLanguage" placeholder="Язык сзади" />
-            <select id="newSpeechLang">
-              <option value="en-US">English</option>
-              <option value="es-ES">Español</option>
-              <option value="de-DE">Deutsch</option>
-              <option value="fr-FR">Français</option>
-              <option value="it-IT">Italiano</option>
-              <option value="pl-PL">Polski</option>
-              <option value="uk-UA">Українська</option>
-              <option value="ru-RU">Русский</option>
-            </select>
-          </div>
-          <button class="btn primary" type="submit">Добавить язык</button>
-        </form>
-      </div>
-    </section>
+<div class="card p">
+  <div class="topline"><div class="row"><strong>Языки</strong><span class="muted">добавление наборов</span></div><button class="btn" id="toggleLanguageManager">Показать</button></div>
+  <div class="collapse-body hidden" id="languageManagerBody">
+    <form id="addLanguageForm" class="split">
+      <div class="field"><label class="label">Название набора</label><input id="newLanguageName" placeholder="Например: Испанский → Украинский"></div>
+      <div class="field"><label class="label">Язык спереди</label><input id="newFrontLanguage" placeholder="Іспанська"></div>
+      <div class="field"><label class="label">Язык сзади</label><input id="newBackLanguage" placeholder="Українська"></div>
+      <div class="field"><label class="label">Язык озвучки</label><select id="newSpeechLang"></select></div>
+      <div><button class="btn primary full" type="submit">Добавить набор</button></div>
+    </form>
+  </div>
+</div>
 
-    <section>
-      <div class="row-between" style="margin-bottom:10px">
-        <button class="btn" type="button" id="toggleStatsBtn">Показать статистику</button>
-        <span class="small muted">Фокус на карточках</span>
-      </div>
-      <div class="stats" id="statsGrid" hidden></div>
-    </section>
+<div class="card p">
+  <div class="topline"><div class="row"><strong>Статистика</strong><span class="muted">можно скрыть</span></div><button class="btn" id="toggleStats">Показать</button></div>
+  <div class="collapse-body hidden" id="statsBody"><div class="grid-stats" id="statsGrid"></div></div>
+</div>
 
-    <section class="row-between">
-      <div>
-        <h2 id="activeSetTitle" style="margin:0 0 6px;font-size:26px"></h2>
-        <p class="subtitle" id="activeDirection"></p>
-      </div>
-      <div class="actions-stack">
-        <button class="btn" type="button" id="exportJsonBtn">Экспорт JSON</button>
-        <button class="btn" type="button" id="exportTxtBtn">Экспорт TXT</button>
-        <label class="file-label">
-          Импорт
-          <input class="hidden-input" type="file" id="importFile" accept=".json,.txt" />
-        </label>
-        <button class="btn" type="button" id="shuffleBtn">Перемешать</button>
-        <button class="btn" type="button" id="resetBtn">Сброс</button>
-      </div>
-    </section>
+<div class="card p">
+  <div class="row between wrap">
+    <div><div style="font-size:24px;font-weight:800" id="activeLanguageName"></div><div class="subtitle" id="directionLabel"></div></div>
+    <div class="controls-grid">
+      <button class="btn" id="exportJsonBtn">Экспорт JSON</button>
+      <button class="btn" id="exportTxtBtn">Экспорт TXT</button>
+      <label class="btn" style="display:flex;align-items:center;justify-content:center">Импорт<input type="file" id="importInput" accept=".json,.txt" style="display:none"></label>
+      <button class="btn" id="shuffleBtn">Перемешать</button>
+      <button class="btn" id="resetBtn">Сброс</button>
+    </div>
+  </div>
+</div>
 
-    <section id="messageBox"></section>
+<div id="noticeBox" class="hidden"></div>
 
-    <section>
-      <div class="tabs">
-        <button class="tab-btn active" data-tab="study">Учить</button>
-        <button class="tab-btn" data-tab="add">Добавить слова</button>
-        <button class="tab-btn" data-tab="database">База слов</button>
-      </div>
-    </section>
+<div class="card"><div class="tabs">
+  <button class="tab active" data-tab="study">Учить</button>
+  <button class="tab" data-tab="add">Добавить слова</button>
+  <button class="tab" data-tab="database">База слов</button>
+</div></div>
 
-    <section class="tab-panel active" id="panel-study">
-      <div class="study-layout">
-        <div class="card pad">
-          <div class="row-between small muted" style="margin-bottom:12px">
-            <span id="studyCounter"></span>
-            <span class="badge" id="nextReviewBadge"></span>
-          </div>
-          <button class="flashcard" type="button" id="flashcardBtn">
-            <div class="flashcard-label" id="flashcardLabel"></div>
-            <div class="flashcard-main" id="flashcardMain"></div>
-            <div class="small muted" id="flashcardCategory"></div>
-            <div class="hint" id="flashcardHint"></div>
-          </button>
-          <div class="actions-stack" style="margin-top:12px">
-            <button class="btn" type="button" id="prevBtn">Назад</button>
-            <button class="btn primary" type="button" id="nextBtn">Следующая</button>
-            <button class="btn" type="button" id="speakBtn">Озвучить</button>
-            <button class="btn" type="button" id="toggleLearnedBtn">Отметить как изучено</button>
-          </div>
-          <div id="flipRatingBox" class="grid grid-3" style="gap:8px;margin-top:12px;display:none">
-            <button class="btn" type="button" data-rate="2">Сложно</button>
-            <button class="btn" type="button" data-rate="4">Нормально</button>
-            <button class="btn primary" type="button" data-rate="5">Легко</button>
-          </div>
-          <div id="typeModeBox" class="card pad" style="margin-top:12px; display:none; box-shadow:none; background:#f8fafc">
-            <div class="small muted" id="typeModePrompt"></div>
-            <div style="margin-top:10px"><input id="answerInput" placeholder="Введите ответ" /></div>
-            <div id="answerFeedback" style="margin-top:10px"></div>
-            <div class="row" style="margin-top:10px">
-              <button class="btn primary" type="button" id="checkAnswerBtn">Проверить</button>
-              <button class="btn" type="button" id="showAnswerBtn">Показать ответ</button>
-            </div>
-            <div class="grid grid-3" style="gap:8px;margin-top:12px">
-              <button class="btn" type="button" data-rate="2">Сложно</button>
-              <button class="btn" type="button" data-rate="4">Нормально</button>
-              <button class="btn primary" type="button" data-rate="5">Легко</button>
-            </div>
-          </div>
+<div id="tab-study" class="stack">
+  <div class="section-grid">
+    <div class="card p">
+      <div id="studyEmpty" class="notice bad hidden">Нет карточек для изучения. Добавьте новые слова.</div>
+      <div id="studyArea">
+        <div class="row between wrap" style="margin-bottom:10px"><span class="muted" id="studyCounter"></span><span class="badge" id="studyReviewStatus"></span></div>
+        <div class="study-card" id="studyCard">
+          <div class="eyebrow" id="studyCardLabel"></div>
+          <div class="big" id="studyCardText"></div>
+          <div class="subtitle" id="studyCategory" style="margin-top:12px"></div>
+          <div class="subtitle" id="studyHint" style="margin-top:14px"></div>
         </div>
-
-        <div class="card collapsible" id="studySettingsSection">
-          <div class="pad collapsible-head" data-toggle="studySettingsSection">
-            <strong>Настройки изучения</strong>
-            <button class="btn ghost" type="button" id="toggleSettingsBtn">Показать</button>
+        <div class="controls-grid" style="margin-top:10px">
+          <button class="btn" id="prevBtn">Назад</button>
+          <button class="btn primary" id="nextBtn">Следующая</button>
+          <button class="btn" id="speakBtn">Озвучить</button>
+          <button class="btn" id="toggleLearnedBtn">Отметить как изучено</button>
+        </div>
+        <div id="flipRateBox" class="controls-grid hidden" style="margin-top:10px">
+          <button class="btn" data-rate="2">Сложно</button>
+          <button class="btn" data-rate="4">Нормально</button>
+          <button class="btn primary" data-rate="5">Легко</button>
+        </div>
+        <div id="typeModeBox" class="answer-box hidden" style="margin-top:10px">
+          <div class="hint" id="typePrompt"></div>
+          <div style="margin-top:8px"><input id="answerInput" placeholder=""></div>
+          <div id="answerFeedback" class="hidden" style="margin-top:8px"></div>
+          <div class="controls-grid" style="margin-top:10px">
+            <button class="btn primary" id="checkAnswerBtn">Проверить</button>
+            <button class="btn" id="revealAnswerBtn">Показать ответ</button>
+            <button class="btn" id="slowSpeakBtn">Медленно</button>
           </div>
-          <div class="pad collapsible-body grid">
-            <label class="grid">Фильтр по статусу
-              <select id="statusFilter">
-                <option value="all">Все карточки</option>
-                <option value="learned">Только изученные</option>
-                <option value="not-learned">Только не изученные</option>
-              </select>
-            </label>
-            <label class="grid">Фильтр по категории
-              <select id="categoryFilter"></select>
-            </label>
-            <label class="grid">Изначальная сторона карточки
-              <select id="frontSideSelect"></select>
-            </label>
-            <label class="grid">Режим изучения
-              <select id="studyModeSelect">
-                <option value="flip">Переворот карточки</option>
-                <option value="type">Вписать ответ</option>
-              </select>
-            </label>
-            <label class="grid">Язык озвучки
-              <select id="speechLangSelect">
-                <option value="en-US">English</option>
-                <option value="es-ES">Español</option>
-                <option value="de-DE">Deutsch</option>
-                <option value="fr-FR">Français</option>
-                <option value="it-IT">Italiano</option>
-                <option value="pl-PL">Polski</option>
-                <option value="uk-UA">Українська</option>
-                <option value="ru-RU">Русский</option>
-              </select>
-            </label>
+          <div class="controls-grid" style="margin-top:10px">
+            <button class="btn" data-rate="2">Сложно</button>
+            <button class="btn" data-rate="4">Нормально</button>
+            <button class="btn primary" data-rate="5">Легко</button>
           </div>
         </div>
       </div>
-    </section>
+    </div>
 
-    <section class="tab-panel" id="panel-add">
-      <div class="grid">
-        <div class="card pad">
-          <h3 style="margin-top:0">Добавить новую карточку</h3>
-          <form class="grid" id="addCardForm">
-            <div class="grid grid-2">
-              <label class="grid"><span id="addWordLabel">Язык 1</span><input id="wordInput" /></label>
-              <label class="grid"><span id="addTranslationLabel">Язык 2</span><input id="translationInput" /></label>
-            </div>
-            <label class="grid">Категория / заметка<textarea id="notesInput" placeholder="Например: Приветствия"></textarea></label>
-            <button class="btn primary" type="submit">Сохранить карточку</button>
-          </form>
-        </div>
-        <div class="card pad">
-          <h3 style="margin-top:0">Пакетное добавление</h3>
-          <p class="subtitle">Поддерживается таблица с колонками: <span id="bulkFormatLabel"></span> → Тема (Категория), либо формат слово | перевод | заметка.</p>
-          <textarea id="bulkTextarea" style="min-height:220px"></textarea>
-          <div class="row" style="margin-top:10px">
-            <button class="btn primary" type="button" id="bulkAddBtn">Добавить списком</button>
-            <button class="btn" type="button" id="clearTemplateBtn">Очистить шаблон</button>
-          </div>
-        </div>
+    <div class="card p">
+      <div class="topline"><div class="row"><strong>Настройки изучения</strong></div><button class="btn" id="toggleStudySettings">Показать</button></div>
+      <div id="studySettingsBody" class="collapse-body hidden stack">
+        <div class="field"><label class="label">Фильтр по статусу</label><select id="statusFilter"></select></div>
+        <div class="field"><label class="label">Фильтр по категории</label><select id="categoryFilter"></select></div>
+        <div class="field"><label class="label">Изначальная сторона карточки</label><select id="frontSideSelect"></select></div>
+        <div class="field"><label class="label">Режим изучения</label><select id="studyModeSelect"></select></div>
+        <div class="field"><label class="label">Язык озвучки</label><select id="speechLangSelect"></select></div>
+        <div class="card p hint">Сторона карточки выбирается по названию языка. Статистика и настройки можно прятать, чтобы акцент оставался на карточках.</div>
       </div>
-    </section>
+    </div>
+  </div>
+</div>
 
-    <section class="tab-panel" id="panel-database">
-      <div class="card pad">
-        <div class="grid" style="gap:10px">
-          <div class="grid grid-4">
-            <input id="searchInput" placeholder="Поиск по слову, переводу или заметке" />
-            <select id="dbStatusFilter">
-              <option value="all">Все</option>
-              <option value="learned">Изученные</option>
-              <option value="not-learned">Не изученные</option>
-            </select>
-            <select id="dbCategoryFilter"></select>
-            <select id="sortBySelect">
-              <option value="newest">Сначала новые</option>
-              <option value="oldest">Сначала старые</option>
-              <option value="az">A–Z</option>
-              <option value="za">Z–A</option>
-              <option value="review">По дате повторения</option>
-            </select>
-          </div>
-        </div>
-      </div>
-      <div class="small muted" id="dbSummary" style="margin-top:10px"></div>
-      <div class="card-list" id="databaseList" style="margin-top:12px"></div>
-    </section>
-  </main>
+<div id="tab-add" class="stack hidden">
+  <div class="card p">
+    <form id="addCardForm" class="split">
+      <div class="field"><label class="label" id="wordLabel"></label><input id="wordInput"></div>
+      <div class="field"><label class="label" id="translationLabel"></label><input id="translationInput"></div>
+      <div class="field" style="grid-column:1/-1"><label class="label">Категория / заметка</label><textarea id="notesInput" placeholder="Например: Приветствия"></textarea></div>
+      <div><button class="btn primary full" type="submit">Сохранить карточку</button></div>
+    </form>
+  </div>
+  <div class="card p">
+    <div class="row"><strong>Пакетное добавление</strong></div>
+    <div class="hint" style="margin-top:8px">1) слово | перевод | заметка<br>2) таблица из Excel / Google Sheets: язык спереди → язык сзади → тема</div>
+    <textarea id="bulkInput" style="margin-top:10px;min-height:180px"></textarea>
+    <div class="controls-grid" style="margin-top:10px"><button class="btn primary" id="bulkAddBtn">Добавить списком</button><button class="btn" id="clearTemplateBtn">Очистить шаблон</button></div>
+  </div>
+</div>
 
-  <script>
-    const STORAGE_KEY = "language-flashcards-db-gh-v1";
-    const UI_KEY = "language-flashcards-ui-gh-v1";
-    const DAY_MS = 24 * 60 * 60 * 1000;
-    const ALL_CATEGORIES = "__all_categories__";
+<div id="tab-database" class="stack hidden">
+  <div class="card p">
+    <div class="split">
+      <div class="field"><label class="label">Поиск</label><input id="searchInput" placeholder="Поиск по слову, переводу или заметке"></div>
+      <div class="field"><label class="label">Фильтр по статусу</label><select id="dbStatusFilter"></select></div>
+      <div class="field"><label class="label">Категория</label><select id="dbCategoryFilter"></select></div>
+      <div class="field"><label class="label">Сортировка</label><select id="sortBySelect"></select></div>
+    </div>
+  </div>
+  <div class="muted" id="dbSummary"></div>
+  <div id="dbList" class="list"></div>
+</div>
+</div>
 
-    function createCard(word, translation, notes = "") {
-      return {
-        id: crypto.randomUUID(),
-        word,
-        translation,
-        notes,
-        learned: false,
-        createdAt: Date.now(),
-        repetition: 0,
-        interval: 0,
-        easeFactor: 2.5,
-        nextReviewAt: Date.now(),
-        lastReviewedAt: null,
-      };
-    }
+<script>
+const STORAGE_KEY = "language-flashcards-db-gh-v2";
+const DAY_MS = 24*60*60*1000;
+const ALL_CATEGORIES = "__all_categories__";
+const STUDY_MODE_FLIP = "flip";
+const STUDY_MODE_TYPE = "type";
+const SPEECH_OPTIONS = [["en-US","English"],["es-ES","Español"],["de-DE","Deutsch"],["fr-FR","Français"],["it-IT","Italiano"],["pl-PL","Polski"],["uk-UA","Українська"],["ru-RU","Русский"]];
 
-    const DEFAULT_LANGUAGES = [
-      {
-        id: "es-uk",
-        name: "Испанский → Украинский",
-        frontLanguage: "Іспанська",
-        backLanguage: "Українська",
-        speechLang: "es-ES",
-        bulkTemplate: `Іспанська\tУкраїнська\tТема (Категорія)\nHola\tПривіт\tПривітання і ввічливість\nBuenos días\tДоброго ранку\tПривітання і ввічливість\nBuenas tardes\tДоброго дня\tПривітання і ввічливість\nBuenas noches\tДоброї ночі\tПривітання і ввічливість\nAdiós\tДо побачення\tПривітання і ввічливість\nHasta luego\tДо зустрічі\tПривітання і ввічливість\nPor favor\tБудь ласка\tПривітання і ввічливість`,
-        cards: [createCard("Hola", "Привіт", "Привітання і ввічливість"), createCard("Gracias", "Дякую", "Привітання і ввічливість"), createCard("Casa", "Дім", "Дім і побут")],
-      },
-      {
-        id: "en-ru",
-        name: "Английский → Русский",
-        frontLanguage: "English",
-        backLanguage: "Русский",
-        speechLang: "en-US",
-        bulkTemplate: `English\tРусский\tТема (Категория)\nHello\tПривет\tПриветствия\nThank you\tСпасибо\tПриветствия\nHouse\tДом\tДом и быт`,
-        cards: [createCard("Hello", "Привет", "Приветствия"), createCard("Thank you", "Спасибо", "Приветствия"), createCard("House", "Дом", "Дом и быт")],
-      },
-    ];
+function uid(){ return crypto.randomUUID(); }
+function createCard(word, translation, notes=""){ return {id:uid(), word, translation, notes, learned:false, createdAt:Date.now(), repetition:0, interval:0, easeFactor:2.5, nextReviewAt:Date.now(), lastReviewedAt:null}; }
+const DEFAULT_LANGUAGES = [
+  {id:"es-uk",name:"Испанский → Украинский",frontLanguage:"Іспанська",backLanguage:"Українська",speechLang:"es-ES",bulkTemplate:`Іспанська	Українська	Тема (Категорія)
+Hola	Привіт	Привітання і ввічливість
+Buenos días	Доброго ранку	Привітання і ввічливість
+Buenas tardes	Доброго дня	Привітання і ввічливість
+Buenas noches	Доброї ночі	Привітання і ввічливість
+Adiós	До побачення	Привітання і ввічливість
+Hasta luego	До зустрічі	Привітання і ввічливість
+Por favor	Будь ласка	Привітання і ввічливість`,cards:[createCard("Hola","Привіт","Привітання і ввічливість"),createCard("Gracias","Дякую","Привітання і ввічливість"),createCard("Casa","Дім","Дім і побут")]},
+  {id:"en-ru",name:"Английский → Русский",frontLanguage:"English",backLanguage:"Русский",speechLang:"en-US",bulkTemplate:`English	Русский	Тема (Категория)
+Hello	Привет	Приветствия
+Thank you	Спасибо	Приветствия
+House	Дом	Дом и быт`,cards:[createCard("Hello","Привет","Приветствия"),createCard("Thank you","Спасибо","Приветствия"),createCard("House","Дом","Дом и быт")]}
+];
+function normalizeCard(item){ return {id:item.id||uid(), word:String(item.word||"").trim(), translation:String(item.translation||"").trim(), notes:String(item.notes||"").trim(), learned:Boolean(item.learned), createdAt:Number(item.createdAt||Date.now()), repetition:Number(item.repetition||0), interval:Number(item.interval||0), easeFactor:Number(item.easeFactor||2.5), nextReviewAt:Number(item.nextReviewAt||Date.now()), lastReviewedAt:item.lastReviewedAt?Number(item.lastReviewedAt):null}; }
+function normalizeLanguage(language,fallback={}){ const front=String(language.frontLanguage||fallback.frontLanguage||"Язык 1").trim(); const back=String(language.backLanguage||fallback.backLanguage||"Язык 2").trim(); return {id:language.id||uid(), name:String(language.name||fallback.name||"Новый язык").trim(), frontLanguage:front, backLanguage:back, speechLang:String(language.speechLang||fallback.speechLang||"en-US"), bulkTemplate:String(language.bulkTemplate||fallback.bulkTemplate||`${front}	${back}	Тема (Категорія)`), cards:Array.isArray(language.cards)?language.cards.map(normalizeCard):[]};}
+function loadData(){ try{ const raw=localStorage.getItem(STORAGE_KEY); if(!raw) return DEFAULT_LANGUAGES.map(normalizeLanguage); const parsed=JSON.parse(raw); if(!Array.isArray(parsed)) return DEFAULT_LANGUAGES.map(normalizeLanguage); return parsed.map(normalizeLanguage);}catch{return DEFAULT_LANGUAGES.map(normalizeLanguage);} }
+const state = { languageSets: loadData(), activeLanguageId: (loadData()[0]||{}).id || "", studyIndex:0, isFlipped:false, filter:"all", categoryFilter:ALL_CATEGORIES, sortBy:"newest", studyMode:STUDY_MODE_FLIP, answerInput:"", answerFeedback:null, showLanguageManager:false, showStats:false, showStudySettings:false, activeTab:"study" };
+function saveData(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state.languageSets)); }
+function currentLanguage(){ return state.languageSets.find(x=>x.id===state.activeLanguageId) || state.languageSets[0] || null; }
+function categories(){ const set=new Set((currentLanguage()?.cards||[]).map(c=>c.notes?.trim()).filter(Boolean)); return [ALL_CATEGORIES, ...Array.from(set).sort((a,b)=>a.localeCompare(b,"uk"))]; }
+function filterByLearned(cards,filter){ if(filter==="learned") return cards.filter(c=>c.learned); if(filter==="not-learned") return cards.filter(c=>!c.learned); return cards; }
+function filterByCategory(cards,category){ if(category===ALL_CATEGORIES) return cards; return cards.filter(c=>(c.notes||"Без категории")===category); }
+function getDueCards(cards,filter,category){ const base=filterByCategory(filterByLearned(cards,filter),category); const due=base.filter(c=>(c.nextReviewAt||0)<=Date.now()); return due.length?due:base; }
+function currentStudyCards(){ return getDueCards(currentLanguage()?.cards||[], state.filter, state.categoryFilter); }
+function currentCard(){ const cards=currentStudyCards(); return cards.length?cards[state.studyIndex % cards.length]:null; }
+function stats(){ const cards=currentLanguage()?.cards||[]; const learnedCount=cards.filter(c=>c.learned).length; const dueCount=cards.filter(c=>(c.nextReviewAt||0)<=Date.now()).length; const progress=cards.length?Math.round((learnedCount/cards.length)*100):0; return {total:cards.length, learnedCount, dueCount, progress}; }
+function getReviewStatus(nextReviewAt){ const diff=nextReviewAt-Date.now(); if(diff<=0) return "Сейчас"; const days=Math.ceil(diff/DAY_MS); if(days===1) return "Завтра"; return `Через ${days} дн.`; }
+function formatDateTime(ts){ if(!ts) return "—"; return new Intl.DateTimeFormat("ru-RU",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"}).format(new Date(ts)); }
+function calculateSpacedRepetition(card,quality){ const now=Date.now(); let repetition=card.repetition||0; let interval=card.interval||0; let easeFactor=card.easeFactor||2.5; if(quality<3){ repetition=0; interval=1; easeFactor=Math.max(1.3,easeFactor-0.2);} else { repetition+=1; if(repetition===1) interval=1; else if(repetition===2) interval=3; else interval=Math.max(1,Math.round(interval*easeFactor)); easeFactor=Math.max(1.3,easeFactor+(0.1-(5-quality)*(0.08+(5-quality)*0.02))); } return {...card, learned:quality>=4?true:card.learned, repetition, interval, easeFactor:Number(easeFactor.toFixed(2)), lastReviewedAt:now, nextReviewAt:now+interval*DAY_MS}; }
+function parseBulkInput(text){ const lines=text.split(/\r?\n/).map(x=>x.trim()).filter(Boolean); if(!lines.length) return []; const hasTabs=lines.some(x=>x.includes("\t")); if(hasTabs){ return lines.slice(1).map(line=>{ const parts=line.split("\t").map(x=>x.trim()); return {word:parts[0]||"", translation:parts[1]||"", notes:parts[2]||""}; }).filter(x=>x.word&&x.translation).map(normalizeCard);} return lines.map(line=>{ const parts=line.split("|").map(x=>x.trim()); return {word:parts[0]||"", translation:parts[1]||"", notes:parts.slice(2).join(" | ")||""}; }).filter(x=>x.word&&x.translation).map(normalizeCard); }
 
-    const defaultUI = {
-      activeLanguageId: DEFAULT_LANGUAGES[0].id,
-      filter: "all",
-      categoryFilter: ALL_CATEGORIES,
-      sortBy: "newest",
-      studyMode: "flip",
-      search: "",
-      studyIndex: 0,
-      isFlipped: false,
-      answerInput: "",
-      answerFeedback: null,
-      showStats: false,
-      showLanguageManager: false,
-      showStudySettings: false,
-      activeTab: "study",
-      message: null,
-    };
+// Duolingo-like speech
+const LANGUAGE_CODE_MAP = { english:"en-US", englishus:"en-US", англійська:"en-US", английский:"en-US", espanol:"es-ES", spanish:"es-ES", іспанська:"es-ES", испанский:"es-ES", deutsch:"de-DE", german:"de-DE", німецька:"de-DE", немецкий:"de-DE", francais:"fr-FR", french:"fr-FR", французька:"fr-FR", французский:"fr-FR", italiano:"it-IT", italian:"it-IT", італійська:"it-IT", итальянский:"it-IT", polski:"pl-PL", polish:"pl-PL", польська:"pl-PL", польский:"pl-PL", українська:"uk-UA", ukrainian:"uk-UA", украинский:"uk-UA", русский:"ru-RU", russian:"ru-RU" };
+let cachedVoices = []; let speechUnlocked = false;
+function normalizeLanguageName(value){ return String(value||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^\p{L}]/gu,""); }
+function inferLangFromLabel(label,fallback="en-US"){ const normalized=normalizeLanguageName(label); return LANGUAGE_CODE_MAP[normalized] || fallback; }
+function inferLangFromText(text,fallback="en-US"){ const sample=String(text||"").trim(); if(!sample) return fallback; if(/[¿¡ñáéíóúü]/i.test(sample)) return "es-ES"; if(/[а-яёіїєґ]/i.test(sample)){ if(/[іїєґ]/i.test(sample)) return "uk-UA"; return "ru-RU"; } if(/[äöüß]/i.test(sample)) return "de-DE"; if(/[àâçéèêëîïôûùüÿœæ]/i.test(sample)) return "fr-FR"; if(/[àèéìíîòóù]/i.test(sample)) return "it-IT"; if(/[ąćęłńóśźż]/i.test(sample)) return "pl-PL"; if(/[a-z]/i.test(sample)) return fallback; return fallback; }
+async function unlockSpeech(){ if(speechUnlocked || typeof window==="undefined" || !("speechSynthesis" in window)) return; speechUnlocked=true; try{ const warmup=new SpeechSynthesisUtterance(" "); warmup.volume=0; window.speechSynthesis.speak(warmup); window.speechSynthesis.cancel(); }catch{} }
+async function getVoicesAsync(){ if(typeof window==="undefined" || !("speechSynthesis" in window)) return []; const existing=window.speechSynthesis.getVoices(); if(existing&&existing.length){ cachedVoices=existing; return existing; } return new Promise(resolve=>{ let settled=false; const finish=(voices)=>{ if(settled) return; settled=true; cachedVoices=voices||[]; window.speechSynthesis.removeEventListener("voiceschanged", handleVoicesChanged); resolve(cachedVoices); }; const handleVoicesChanged=()=>{ const voices=window.speechSynthesis.getVoices(); if(voices&&voices.length) finish(voices); }; window.speechSynthesis.addEventListener("voiceschanged", handleVoicesChanged); setTimeout(()=>{ const voices=window.speechSynthesis.getVoices(); finish(voices || cachedVoices); }, 1200); }); }
+function pickBestVoice(voices,requestedLang){ if(!voices.length) return null; const exact=voices.find(v=>v.lang===requestedLang); if(exact) return exact; const short=requestedLang.split("-")[0]; const regional=voices.find(v=>v.lang && v.lang.toLowerCase().startsWith(short.toLowerCase())); if(regional) return regional; const localService=voices.find(v=>v.localService); return localService || voices[0] || null; }
+async function speakText(text,options={}){ if(typeof window==="undefined" || !("speechSynthesis" in window) || !String(text||"").trim()) return; const { lang, fallbackLang="en-US", rate=0.95, pitch=1, volume=1, cancelCurrent=true } = options; await unlockSpeech(); const synth=window.speechSynthesis; const guessedLang=lang || inferLangFromText(text,fallbackLang); const voices=await getVoicesAsync(); const selectedVoice=pickBestVoice(voices, guessedLang); if(cancelCurrent) synth.cancel(); const utterance=new SpeechSynthesisUtterance(String(text).trim()); utterance.rate=rate; utterance.pitch=pitch; utterance.volume=volume; utterance.lang=selectedVoice && selectedVoice.lang ? selectedVoice.lang : guessedLang; if(selectedVoice) utterance.voice=selectedVoice; setTimeout(()=>synth.speak(utterance), 40); }
+function buildSpeechOptions({ text, explicitLang, languageLabel, slow=false }){ const fallbackLang=inferLangFromLabel(languageLabel, explicitLang || "en-US"); return { lang: inferLangFromText(text, explicitLang || fallbackLang), fallbackLang, rate: slow ? 0.72 : 0.95, pitch:1, volume:1 }; }
+if(typeof window!=="undefined" && "speechSynthesis" in window){ window.addEventListener("pointerdown", ()=>{ unlockSpeech(); window.speechSynthesis.getVoices(); }, {once:true}); }
 
-    function normalizeCard(item) {
-      return {
-        id: item.id || crypto.randomUUID(),
-        word: String(item.word || "").trim(),
-        translation: String(item.translation || "").trim(),
-        notes: String(item.notes || "").trim(),
-        learned: Boolean(item.learned),
-        createdAt: Number(item.createdAt || Date.now()),
-        repetition: Number(item.repetition || 0),
-        interval: Number(item.interval || 0),
-        easeFactor: Number(item.easeFactor || 2.5),
-        nextReviewAt: Number(item.nextReviewAt || Date.now()),
-        lastReviewedAt: item.lastReviewedAt ? Number(item.lastReviewedAt) : null,
-      };
-    }
+function updateActiveLanguage(updater){ const active=currentLanguage(); if(!active) return; state.languageSets=state.languageSets.map(language=>language.id===active.id?updater(language):language); saveData(); render(); }
+function showNotice(msg,type="good"){ const box=document.getElementById("noticeBox"); box.className=`card notice ${type}`; box.textContent=msg; }
+function fillSelectOptions(select,items,selected){ select.innerHTML=items.map(([v,l])=>`<option value="${String(v).replace(/"/g,"&quot;")}" ${v===selected?'selected':''}>${String(l).replace(/</g,"&lt;")}</option>`).join(""); }
+function resetStudyState(){ state.studyIndex=0; state.isFlipped=false; state.answerInput=""; state.answerFeedback=null; }
 
-    function normalizeLanguage(language) {
-      return {
-        id: language.id || crypto.randomUUID(),
-        name: String(language.name || "Новый язык").trim(),
-        frontLanguage: String(language.frontLanguage || "Язык 1").trim(),
-        backLanguage: String(language.backLanguage || "Язык 2").trim(),
-        speechLang: String(language.speechLang || "en-US"),
-        bulkTemplate: String(language.bulkTemplate || `${language.frontLanguage || "Язык 1"}\t${language.backLanguage || "Язык 2"}\tТема (Категория)`),
-        cards: Array.isArray(language.cards) ? language.cards.map(normalizeCard) : [],
-      };
-    }
+function getFilteredCards(){ let result=filterByCategory(filterByLearned(currentLanguage()?.cards||[], state.filter), state.categoryFilter); const q=document.getElementById("searchInput").value.trim().toLowerCase(); if(q){ result=result.filter(card=>card.word.toLowerCase().includes(q)||card.translation.toLowerCase().includes(q)||(card.notes||"").toLowerCase().includes(q)); } if(state.sortBy==="newest") result.sort((a,b)=>b.createdAt-a.createdAt); if(state.sortBy==="oldest") result.sort((a,b)=>a.createdAt-b.createdAt); if(state.sortBy==="az") result.sort((a,b)=>a.word.localeCompare(b.word)); if(state.sortBy==="za") result.sort((a,b)=>b.word.localeCompare(a.word)); if(state.sortBy==="review") result.sort((a,b)=>(a.nextReviewAt||0)-(b.nextReviewAt||0)); return result; }
 
-    function loadLanguages() {
-      try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (!raw) return DEFAULT_LANGUAGES.map(normalizeLanguage);
-        const parsed = JSON.parse(raw);
-        return Array.isArray(parsed) ? parsed.map(normalizeLanguage) : DEFAULT_LANGUAGES.map(normalizeLanguage);
-      } catch {
-        return DEFAULT_LANGUAGES.map(normalizeLanguage);
-      }
-    }
+function renderLanguageTabs(){
+  const tabs=document.getElementById("languageTabs");
+  tabs.innerHTML=state.languageSets.map(lang=>`<button class="btn ${lang.id===state.activeLanguageId?'primary':''}" data-lang="${lang.id}">${lang.name}</button>`).join("");
+  tabs.querySelectorAll("[data-lang]").forEach(btn=>btn.onclick=()=>{ state.activeLanguageId=btn.dataset.lang; state.categoryFilter=ALL_CATEGORIES; state.showStudySettings=false; resetStudyState(); render(); });
+  fillSelectOptions(document.getElementById("mobileLanguageSelect"), state.languageSets.map(l=>[l.id,l.name]), state.activeLanguageId);
+}
+function renderStats(){
+  const s=stats();
+  document.getElementById("statsGrid").innerHTML = `<div class="card p stat"><h3>Всего карточек</h3><div class="n">${s.total}</div></div><div class="card p stat"><h3>Изучено</h3><div class="n">${s.learnedCount}</div></div><div class="card p stat"><h3>На повторение</h3><div class="n">${s.dueCount}</div></div><div class="card p stat"><h3>Осталось</h3><div class="n">${Math.max(s.total-s.learnedCount,0)}</div></div><div class="card p stat"><h3>Прогресс</h3><div class="n">${s.progress}%</div><div class="progress"><div style="width:${s.progress}%"></div></div></div>`;
+}
+function renderStudy(){
+  const lang=currentLanguage(); const frontLabel=lang?.frontLanguage||"Язык 1"; const backLabel=lang?.backLanguage||"Язык 2"; const speechLang=lang?.speechLang || inferLangFromLabel(frontLabel, "en-US");
+  document.getElementById("activeLanguageName").textContent=lang?.name||"Языковой набор";
+  document.getElementById("directionLabel").textContent=`Текущее направление: ${frontLabel} → ${backLabel}`;
+  document.getElementById("wordLabel").textContent=frontLabel; document.getElementById("translationLabel").textContent=backLabel;
+  fillSelectOptions(document.getElementById("statusFilter"), [["all","Все карточки"],["learned","Только изученные"],["not-learned","Только не изученные"]], state.filter);
+  fillSelectOptions(document.getElementById("dbStatusFilter"), [["all","Все карточки"],["learned","Только изученные"],["not-learned","Только не изученные"]], state.filter);
+  fillSelectOptions(document.getElementById("categoryFilter"), categories().map(c=>[c, c===ALL_CATEGORIES?"Все категории":c]), state.categoryFilter);
+  fillSelectOptions(document.getElementById("dbCategoryFilter"), categories().map(c=>[c, c===ALL_CATEGORIES?"Все категории":c]), state.categoryFilter);
+  fillSelectOptions(document.getElementById("frontSideSelect"), [[frontLabel, `${frontLabel} спереди`],[backLabel, `${backLabel} спереди`]], frontLabel);
+  fillSelectOptions(document.getElementById("studyModeSelect"), [[STUDY_MODE_FLIP,"Переворот карточки"],[STUDY_MODE_TYPE,`Вписать ${backLabel}`]], state.studyMode);
+  fillSelectOptions(document.getElementById("speechLangSelect"), SPEECH_OPTIONS, speechLang);
+  fillSelectOptions(document.getElementById("sortBySelect"), [["newest","Сначала новые"],["oldest","Сначала старые"],["az","A–Z"],["za","Z–A"],["review","По дате повторения"]], state.sortBy);
+  fillSelectOptions(document.getElementById("newSpeechLang"), SPEECH_OPTIONS, document.getElementById("newSpeechLang").value || "en-US");
+  document.getElementById("bulkInput").value = lang.bulkTemplate;
 
-    function loadUI() {
-      try {
-        const raw = localStorage.getItem(UI_KEY);
-        if (!raw) return { ...defaultUI };
-        return { ...defaultUI, ...JSON.parse(raw) };
-      } catch {
-        return { ...defaultUI };
-      }
-    }
+  const card=currentCard(); const empty=document.getElementById("studyEmpty"); const area=document.getElementById("studyArea");
+  if(!card){ empty.classList.remove("hidden"); area.classList.add("hidden"); }
+  else {
+    empty.classList.add("hidden"); area.classList.remove("hidden");
+    const frontText=card.word, backText=card.translation;
+    document.getElementById("studyCounter").textContent=`Карточка ${state.studyIndex+1} из ${currentStudyCards().length}`;
+    document.getElementById("studyReviewStatus").textContent=`Следующее повторение: ${getReviewStatus(card.nextReviewAt)}`;
+    document.getElementById("studyCardLabel").textContent=state.studyMode===STUDY_MODE_FLIP ? (state.isFlipped ? backLabel : frontLabel) : frontLabel;
+    document.getElementById("studyCardText").textContent=state.studyMode===STUDY_MODE_FLIP ? (state.isFlipped ? backText : frontText) : frontText;
+    document.getElementById("studyCategory").textContent=card.notes ? `Категория: ${card.notes}` : "";
+    document.getElementById("studyHint").textContent=state.studyMode===STUDY_MODE_FLIP ? `Нажмите, чтобы увидеть ${backLabel}` : `Введите ${backLabel} ниже`;
+    document.getElementById("toggleLearnedBtn").textContent=card.learned ? "Снять статус изучено" : "Отметить как изучено";
+    document.getElementById("flipRateBox").classList.toggle("hidden", !(state.studyMode===STUDY_MODE_FLIP && state.isFlipped));
+    document.getElementById("typeModeBox").classList.toggle("hidden", state.studyMode!==STUDY_MODE_TYPE);
+    document.getElementById("typePrompt").textContent=`Впишите ${backLabel} для: ${frontText}`;
+    document.getElementById("answerInput").value=state.answerInput;
+    document.getElementById("answerInput").placeholder=`Введите ${backLabel}`;
+    const fb=document.getElementById("answerFeedback");
+    if(state.answerFeedback){ fb.className=`feedback ${state.answerFeedback.isCorrect?'good':'bad'}`; fb.textContent=state.answerFeedback.isCorrect ? "Верно!" : `Правильный ответ: ${state.answerFeedback.expected}`; } else { fb.className="hidden"; fb.textContent=""; }
+    document.getElementById("speakBtn").onclick=()=>speakText(frontText, buildSpeechOptions({text:frontText, explicitLang:speechLang, languageLabel:frontLabel}));
+    document.getElementById("slowSpeakBtn").onclick=()=>speakText(frontText, buildSpeechOptions({text:frontText, explicitLang:speechLang, languageLabel:frontLabel, slow:true}));
+  }
+}
+function renderDatabase(){
+  const lang=currentLanguage(); const frontLabel=lang?.frontLanguage||"Язык 1"; const speechLang=lang?.speechLang || inferLangFromLabel(frontLabel, "en-US");
+  const items=getFilteredCards();
+  document.getElementById("dbSummary").textContent=`Категория: ${state.categoryFilter===ALL_CATEGORIES?"Все категории":state.categoryFilter} · Найдено карточек: ${items.length}`;
+  const list=document.getElementById("dbList");
+  if(!items.length){ list.innerHTML='<div class="card p notice bad">Ничего не найдено.</div>'; return; }
+  list.innerHTML=items.map(card=>`<div class="card p item"><div><div class="row wrap"><div class="item-title">${card.word}</div><span class="badge">${card.learned?"Изучено":"В процессе"}</span><span class="badge">${getReviewStatus(card.nextReviewAt)}</span></div><div style="margin-top:4px">${card.translation}</div>${card.notes?`<div class="hint" style="margin-top:4px">Категория: ${card.notes}</div>`:""}<div class="hint" style="margin-top:4px">Повторений: ${card.repetition} · Интервал: ${card.interval||0} дн. · Следующее: ${formatDateTime(card.nextReviewAt)}</div></div><div class="item-actions"><button class="btn" data-action="speak" data-id="${card.id}">Озвучить</button><button class="btn" data-action="toggle" data-id="${card.id}">${card.learned?"Снять статус":"Изучено"}</button><button class="btn" data-action="delete" data-id="${card.id}">Удалить</button></div></div>`).join("");
+  list.querySelectorAll("[data-action]").forEach(btn=>{ const card=(currentLanguage()?.cards||[]).find(c=>c.id===btn.dataset.id); btn.onclick=()=>{ if(btn.dataset.action==="speak"&&card) speakText(card.word, buildSpeechOptions({text:card.word, explicitLang:speechLang, languageLabel:frontLabel})); if(btn.dataset.action==="toggle"&&card) updateActiveLanguage(language=>({...language, cards:language.cards.map(c=>c.id===card.id?{...c, learned:!c.learned}:c)})); if(btn.dataset.action==="delete"&&card && confirm("Удалить карточку?")){ updateActiveLanguage(language=>({...language, cards:language.cards.filter(c=>c.id!==card.id)})); resetStudyState(); }}; });
+}
+function renderVisibility(){
+  document.getElementById("languageManagerBody").classList.toggle("hidden", !state.showLanguageManager);
+  document.getElementById("statsBody").classList.toggle("hidden", !state.showStats);
+  document.getElementById("studySettingsBody").classList.toggle("hidden", !state.showStudySettings);
+  document.getElementById("toggleLanguageManager").textContent=state.showLanguageManager ? "Скрыть" : "Показать";
+  document.getElementById("toggleStats").textContent=state.showStats ? "Скрыть" : "Показать";
+  document.getElementById("toggleStudySettings").textContent=state.showStudySettings ? "Скрыть" : "Показать";
+  document.querySelectorAll(".tab").forEach(el=>el.classList.toggle("active", el.dataset.tab===state.activeTab));
+  document.getElementById("tab-study").classList.toggle("hidden", state.activeTab!=="study");
+  document.getElementById("tab-add").classList.toggle("hidden", state.activeTab!=="add");
+  document.getElementById("tab-database").classList.toggle("hidden", state.activeTab!=="database");
+}
+function render(){ saveData(); renderLanguageTabs(); renderStats(); renderStudy(); renderDatabase(); renderVisibility(); }
 
-    const state = { languages: loadLanguages(), ui: loadUI() };
+document.getElementById("mobileLanguageSelect").onchange = e => { state.activeLanguageId=e.target.value; state.categoryFilter=ALL_CATEGORIES; state.showStudySettings=false; resetStudyState(); render(); };
+document.getElementById("toggleLanguageManager").onclick=()=>{ state.showLanguageManager=!state.showLanguageManager; renderVisibility(); };
+document.getElementById("toggleStats").onclick=()=>{ state.showStats=!state.showStats; renderVisibility(); };
+document.getElementById("toggleStudySettings").onclick=()=>{ state.showStudySettings=!state.showStudySettings; renderVisibility(); };
+document.querySelectorAll(".tab").forEach(btn=>btn.onclick=()=>{ state.activeTab=btn.dataset.tab; renderVisibility(); });
 
-    const $ = (id) => document.getElementById(id);
+document.getElementById("addLanguageForm").onsubmit=e=>{ e.preventDefault(); const name=document.getElementById("newLanguageName").value.trim(); const front=document.getElementById("newFrontLanguage").value.trim(); const back=document.getElementById("newBackLanguage").value.trim(); const speech=document.getElementById("newSpeechLang").value; if(!name||!front||!back) return showNotice("Заполните название и оба языка.","bad"); const language=normalizeLanguage({name, frontLanguage:front, backLanguage:back, speechLang:speech, bulkTemplate:`${front}	${back}	Тема (Категорія)`, cards:[]}); state.languageSets.push(language); state.activeLanguageId=language.id; state.categoryFilter=ALL_CATEGORIES; resetStudyState(); e.target.reset(); document.getElementById("newSpeechLang").value="en-US"; showNotice("Языковой набор добавлен.","good"); render(); };
 
-    function save() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state.languages));
-      localStorage.setItem(UI_KEY, JSON.stringify(state.ui));
-    }
+document.getElementById("statusFilter").onchange=e=>{ state.filter=e.target.value; document.getElementById("dbStatusFilter").value=e.target.value; resetStudyState(); render(); };
+document.getElementById("dbStatusFilter").onchange=e=>{ state.filter=e.target.value; document.getElementById("statusFilter").value=e.target.value; resetStudyState(); render(); };
+document.getElementById("categoryFilter").onchange=e=>{ state.categoryFilter=e.target.value; document.getElementById("dbCategoryFilter").value=e.target.value; resetStudyState(); render(); };
+document.getElementById("dbCategoryFilter").onchange=e=>{ state.categoryFilter=e.target.value; document.getElementById("categoryFilter").value=e.target.value; resetStudyState(); render(); };
+document.getElementById("sortBySelect").onchange=e=>{ state.sortBy=e.target.value; renderDatabase(); };
+document.getElementById("studyModeSelect").onchange=e=>{ state.studyMode=e.target.value; resetStudyState(); render(); };
+document.getElementById("speechLangSelect").onchange=e=>updateActiveLanguage(language=>({...language, speechLang:e.target.value}));
+document.getElementById("frontSideSelect").onchange=e=>{ const lang=currentLanguage(); if(!lang || e.target.value===lang.frontLanguage) return; updateActiveLanguage(language=>({...language, frontLanguage:language.backLanguage, backLanguage:language.frontLanguage, cards:language.cards.map(card=>({...card, word:card.translation, translation:card.word})), bulkTemplate:`${language.backLanguage}	${language.frontLanguage}	Тема (Категорія)`})); resetStudyState(); };
 
-    function activeLanguage() {
-      return state.languages.find((l) => l.id === state.ui.activeLanguageId) || state.languages[0] || null;
-    }
+document.getElementById("studyCard").onclick=()=>{ if(state.studyMode===STUDY_MODE_FLIP && currentCard()){ state.isFlipped=!state.isFlipped; renderStudy(); } };
+document.getElementById("prevBtn").onclick=()=>{ const cards=currentStudyCards(); if(!cards.length) return; state.studyIndex=(state.studyIndex-1+cards.length)%cards.length; state.isFlipped=false; state.answerInput=""; state.answerFeedback=null; renderStudy(); };
+document.getElementById("nextBtn").onclick=()=>{ const cards=currentStudyCards(); if(!cards.length) return; state.studyIndex=(state.studyIndex+1)%cards.length; state.isFlipped=false; state.answerInput=""; state.answerFeedback=null; renderStudy(); };
+document.getElementById("toggleLearnedBtn").onclick=()=>{ const card=currentCard(); if(!card) return; updateActiveLanguage(language=>({...language, cards:language.cards.map(c=>c.id===card.id?{...c, learned:!c.learned}:c)})); };
+document.querySelectorAll("[data-rate]").forEach(btn=>btn.onclick=()=>{ const card=currentCard(); if(!card) return; const quality=Number(btn.dataset.rate); updateActiveLanguage(language=>({...language, cards:language.cards.map(c=>c.id===card.id?calculateSpacedRepetition(c,quality):c)})); const cards=currentStudyCards(); state.studyIndex=cards.length>1?(state.studyIndex+1)%cards.length:0; state.isFlipped=false; state.answerInput=""; state.answerFeedback=null; });
+document.getElementById("answerInput").oninput=e=>{ state.answerInput=e.target.value; };
+document.getElementById("checkAnswerBtn").onclick=()=>{ const card=currentCard(); if(!card) return; const expected=card.translation.toLowerCase().trim().replace(/\s+/g," "); const actual=(state.answerInput||"").toLowerCase().trim().replace(/\s+/g," "); state.answerFeedback={isCorrect:actual.length>0 && actual===expected, expected:card.translation}; renderStudy(); };
+document.getElementById("revealAnswerBtn").onclick=()=>{ const card=currentCard(); if(!card) return; state.answerFeedback={isCorrect:false, expected:card.translation}; renderStudy(); };
 
-    function setMessage(text, type = "success") {
-      state.ui.message = text ? { text, type } : null;
-      renderMessage();
-      save();
-    }
+document.getElementById("addCardForm").onsubmit=e=>{ e.preventDefault(); const word=document.getElementById("wordInput").value.trim(); const translation=document.getElementById("translationInput").value.trim(); const notes=document.getElementById("notesInput").value.trim(); if(!word||!translation) return showNotice("Заполните слово и перевод.","bad"); const card=normalizeCard(createCard(word,translation,notes)); updateActiveLanguage(language=>({...language, cards:[card, ...language.cards]})); e.target.reset(); showNotice("Карточка добавлена.","good"); };
+document.getElementById("bulkInput").oninput=e=>updateActiveLanguage(language=>({...language, bulkTemplate:e.target.value}));
+document.getElementById("bulkAddBtn").onclick=()=>{ const parsed=parseBulkInput(currentLanguage()?.bulkTemplate||""); if(!parsed.length) return showNotice("Не удалось распознать данные. Вставьте таблицу или строки в формате слово | перевод | категория.","bad"); const prepared=parsed.map(item=>normalizeCard({...item, learned:false, createdAt:Date.now(), repetition:0, interval:0, easeFactor:2.5, nextReviewAt:Date.now(), lastReviewedAt:null})); updateActiveLanguage(language=>({...language, cards:[...prepared, ...language.cards]})); resetStudyState(); showNotice(`Успешно добавлено карточек: ${prepared.length}`,"good"); };
+document.getElementById("clearTemplateBtn").onclick=()=>{ const lang=currentLanguage(); updateActiveLanguage(language=>({...language, bulkTemplate:`${lang.frontLanguage}	${lang.backLanguage}	Тема (Категорія)`})); };
+document.getElementById("searchInput").oninput=()=>renderDatabase();
 
-    function renderMessage() {
-      const box = $("messageBox");
-      if (!state.ui.message) {
-        box.innerHTML = "";
-        return;
-      }
-      box.innerHTML = `<div class="message ${state.ui.message.type}">${escapeHtml(state.ui.message.text)}</div>`;
-    }
+document.getElementById("exportJsonBtn").onclick=()=>{ const lang=currentLanguage(); if(!lang) return; const blob=new Blob([JSON.stringify(lang.cards,null,2)],{type:"application/json"}); const url=URL.createObjectURL(blob); const a=document.createElement("a"); a.href=url; a.download=`${lang.name.toLowerCase().replace(/\s+/g,"-")}-flashcards.json`; a.click(); URL.revokeObjectURL(url); };
+document.getElementById("exportTxtBtn").onclick=()=>{ const lang=currentLanguage(); if(!lang) return; const header=[lang.frontLanguage,lang.backLanguage,"Тема (Категорія)"].join("	"); const lines=lang.cards.map(card=>[card.word,card.translation,card.notes||""].join("	")); const blob=new Blob([[header,...lines].join("
+")],{type:"text/plain;charset=utf-8"}); const url=URL.createObjectURL(blob); const a=document.createElement("a"); a.href=url; a.download=`${lang.name.toLowerCase().replace(/\s+/g,"-")}-flashcards.txt`; a.click(); URL.revokeObjectURL(url); };
+document.getElementById("importInput").onchange=e=>{ const file=e.target.files?.[0]; if(!file) return; const reader=new FileReader(); reader.onload=()=>{ try{ const text=String(reader.result); let cards=[]; if(file.name.endsWith(".json")){ const data=JSON.parse(text); if(!Array.isArray(data)) throw new Error(); cards=data.filter(item=>item.word&&item.translation).map(normalizeCard);} else { cards=parseBulkInput(text);} updateActiveLanguage(language=>({...language, cards})); resetStudyState(); showNotice(`Импортировано карточек: ${cards.length}`,"good"); } catch { showNotice("Не удалось импортировать файл. Используйте JSON, TXT или таблицу с колонками языка.","bad"); } e.target.value=""; }; reader.readAsText(file); };
+document.getElementById("shuffleBtn").onclick=()=>{ const cards=[...(currentLanguage()?.cards||[])]; for(let i=cards.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [cards[i],cards[j]]=[cards[j],cards[i]]; } updateActiveLanguage(language=>({...language, cards})); resetStudyState(); };
+document.getElementById("resetBtn").onclick=()=>{ if(!confirm("Сбросить текущий языковой набор?")) return; const active=currentLanguage(); const fallback=DEFAULT_LANGUAGES.find(language=>language.id===active?.id); if(fallback) updateActiveLanguage(()=>normalizeLanguage(fallback)); else updateActiveLanguage(language=>({...language, cards:[]})); state.categoryFilter=ALL_CATEGORIES; resetStudyState(); showNotice("Набор сброшен.","good"); };
 
-    function escapeHtml(str) {
-      return String(str)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-    }
+render();
 
-    function getCategories(cards) {
-      const set = new Set(cards.map(c => (c.notes || "").trim()).filter(Boolean));
-      return [ALL_CATEGORIES, ...Array.from(set).sort((a,b) => a.localeCompare(b, "uk"))];
-    }
-
-    function filterByLearned(cards) {
-      if (state.ui.filter === "learned") return cards.filter(c => c.learned);
-      if (state.ui.filter === "not-learned") return cards.filter(c => !c.learned);
-      return cards;
-    }
-
-    function filterByCategory(cards) {
-      if (state.ui.categoryFilter === ALL_CATEGORIES) return cards;
-      return cards.filter(c => (c.notes || "Без категории") === state.ui.categoryFilter);
-    }
-
-    function filteredCards() {
-      const lang = activeLanguage();
-      if (!lang) return [];
-      let cards = filterByCategory(filterByLearned([...lang.cards]));
-      const q = state.ui.search.trim().toLowerCase();
-      if (q) cards = cards.filter(c => c.word.toLowerCase().includes(q) || c.translation.toLowerCase().includes(q) || (c.notes || "").toLowerCase().includes(q));
-      if (state.ui.sortBy === "newest") cards.sort((a,b) => b.createdAt - a.createdAt);
-      if (state.ui.sortBy === "oldest") cards.sort((a,b) => a.createdAt - b.createdAt);
-      if (state.ui.sortBy === "az") cards.sort((a,b) => a.word.localeCompare(b.word));
-      if (state.ui.sortBy === "za") cards.sort((a,b) => b.word.localeCompare(a.word));
-      if (state.ui.sortBy === "review") cards.sort((a,b) => (a.nextReviewAt || 0) - (b.nextReviewAt || 0));
-      return cards;
-    }
-
-    function studyCards() {
-      const base = filterByCategory(filterByLearned(activeLanguage()?.cards || []));
-      const due = base.filter(card => (card.nextReviewAt || 0) <= Date.now());
-      return due.length ? due : base;
-    }
-
-    function currentCard() {
-      const cards = studyCards();
-      if (!cards.length) return null;
-      return cards[state.ui.studyIndex % cards.length];
-    }
-
-    function getReviewStatus(ts) {
-      const diff = ts - Date.now();
-      if (diff <= 0) return "Сейчас";
-      const days = Math.ceil(diff / DAY_MS);
-      if (days === 1) return "Завтра";
-      return `Через ${days} дн.`;
-    }
-
-    function calculateSpacedRepetition(card, quality) {
-      const now = Date.now();
-      let repetition = card.repetition || 0;
-      let interval = card.interval || 0;
-      let easeFactor = card.easeFactor || 2.5;
-      if (quality < 3) {
-        repetition = 0;
-        interval = 1;
-        easeFactor = Math.max(1.3, easeFactor - 0.2);
-      } else {
-        repetition += 1;
-        if (repetition === 1) interval = 1;
-        else if (repetition === 2) interval = 3;
-        else interval = Math.max(1, Math.round(interval * easeFactor));
-        easeFactor = Math.max(1.3, easeFactor + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02)));
-      }
-      return { ...card, learned: quality >= 4 ? true : card.learned, repetition, interval, easeFactor: Number(easeFactor.toFixed(2)), lastReviewedAt: now, nextReviewAt: now + interval * DAY_MS };
-    }
-
-    function updateActiveLanguage(updater) {
-      const lang = activeLanguage();
-      if (!lang) return;
-      state.languages = state.languages.map(item => item.id === lang.id ? updater(item) : item);
-    }
-
-    function parseBulkInput(text) {
-      const lines = text.split(/\r?\n/).map(line => line.trim()).filter(Boolean);
-      if (!lines.length) return [];
-      if (lines.some(line => line.includes("\t"))) {
-        return lines.slice(1).map(line => {
-          const parts = line.split("\t").map(v => v.trim());
-          return { word: parts[0] || "", translation: parts[1] || "", notes: parts[2] || "" };
-        }).filter(item => item.word && item.translation).map(normalizeCard);
-      }
-      return lines.map(line => {
-        const parts = line.split("|").map(v => v.trim());
-        return { word: parts[0] || "", translation: parts[1] || "", notes: parts.slice(2).join(" | ") || "" };
-      }).filter(item => item.word && item.translation).map(normalizeCard);
-    }
-
-    function normalizeAnswer(v) {
-      return String(v).toLowerCase().trim().replace(/\s+/g, " ");
-    }
-
-    function resetStudyState() {
-      state.ui.studyIndex = 0;
-      state.ui.isFlipped = false;
-      state.ui.answerInput = "";
-      state.ui.answerFeedback = null;
-    }
-
-    function render() {
-      const lang = activeLanguage();
-      if (!lang) return;
-      const cards = lang.cards || [];
-      const categories = getCategories(cards);
-      const sCards = studyCards();
-      const card = currentCard();
-      if (state.ui.studyIndex >= sCards.length) state.ui.studyIndex = 0;
-
-      // Header
-      $("languageTabs").innerHTML = state.languages.map(language => `<button class="btn ${language.id === state.ui.activeLanguageId ? 'primary' : ''}" data-lang="${language.id}">${escapeHtml(language.name)}</button>`).join("");
-      $("activeSetTitle").textContent = lang.name;
-      $("activeDirection").textContent = `Текущее направление: ${lang.frontLanguage} → ${lang.backLanguage}`;
-
-      // collapsibles
-      toggleSectionUI("languagesSection", state.ui.showLanguageManager, "toggleLanguagesBtn");
-      toggleSectionUI("studySettingsSection", state.ui.showStudySettings, "toggleSettingsBtn");
-      $("toggleStatsBtn").textContent = state.ui.showStats ? "Скрыть статистику" : "Показать статистику";
-      const statsGrid = $("statsGrid");
-      statsGrid.hidden = !state.ui.showStats;
-      const learnedCount = cards.filter(c => c.learned).length;
-      const dueCount = cards.filter(c => (c.nextReviewAt || 0) <= Date.now()).length;
-      const progress = cards.length ? Math.round((learnedCount / cards.length) * 100) : 0;
-      statsGrid.innerHTML = [
-        statCard("Всего карточек", cards.length, progress, false),
-        statCard("Изучено", learnedCount),
-        statCard("На повторение", dueCount),
-        statCard("Осталось", Math.max(cards.length - learnedCount, 0)),
-        statCard("Прогресс", `${progress}%`, progress, true),
-      ].join("");
-
-      // selects and form labels
-      fillCategorySelect($("categoryFilter"), categories, state.ui.categoryFilter);
-      fillCategorySelect($("dbCategoryFilter"), categories, state.ui.categoryFilter);
-      $("statusFilter").value = state.ui.filter;
-      $("dbStatusFilter").value = state.ui.filter;
-      $("sortBySelect").value = state.ui.sortBy;
-      $("searchInput").value = state.ui.search;
-      $("studyModeSelect").value = state.ui.studyMode;
-      $("speechLangSelect").value = lang.speechLang;
-      $("frontSideSelect").innerHTML = `
-        <option value="front">${escapeHtml(lang.frontLanguage)} спереди</option>
-        <option value="back">${escapeHtml(lang.backLanguage)} спереди</option>
-      `;
-      $("frontSideSelect").value = "front";
-      $("addWordLabel").textContent = lang.frontLanguage;
-      $("addTranslationLabel").textContent = lang.backLanguage;
-      $("bulkFormatLabel").textContent = `${lang.frontLanguage} → ${lang.backLanguage}`;
-      $("bulkTextarea").value = lang.bulkTemplate || `${lang.frontLanguage}\t${lang.backLanguage}\tТема (Категория)`;
-
-      // study card
-      $("studyCounter").textContent = sCards.length ? `Карточка ${state.ui.studyIndex + 1} из ${sCards.length}` : "Нет карточек";
-      $("nextReviewBadge").textContent = card ? `Следующее повторение: ${getReviewStatus(card.nextReviewAt)}` : "";
-      const showBack = state.ui.studyMode === "flip" && state.ui.isFlipped;
-      $("flashcardLabel").textContent = showBack ? lang.backLanguage : lang.frontLanguage;
-      $("flashcardMain").textContent = card ? (showBack ? card.translation : card.word) : "Добавьте новые слова";
-      $("flashcardCategory").textContent = card?.notes ? `Категория: ${card.notes}` : "";
-      $("flashcardHint").textContent = state.ui.studyMode === "flip" ? `Нажмите, чтобы увидеть ${lang.backLanguage}` : `Введите ${lang.backLanguage} ниже`;
-      $("toggleLearnedBtn").textContent = card?.learned ? "Снять статус изучено" : "Отметить как изучено";
-      $("flashcardBtn").disabled = !card;
-      $("flipRatingBox").style.display = state.ui.studyMode === "flip" && state.ui.isFlipped && card ? "grid" : "none";
-      $("typeModeBox").style.display = state.ui.studyMode === "type" && card ? "block" : "none";
-      $("typeModePrompt").innerHTML = card ? `Впишите ${escapeHtml(lang.backLanguage)} для: <strong>${escapeHtml(card.word)}</strong>` : "";
-      $("answerInput").value = state.ui.answerInput || "";
-      renderAnswerFeedback();
-
-      // database
-      const dbCards = filteredCards();
-      $("dbSummary").textContent = `Категория: ${state.ui.categoryFilter === ALL_CATEGORIES ? "Все категории" : state.ui.categoryFilter} · Найдено карточек: ${dbCards.length}`;
-      $("databaseList").innerHTML = dbCards.length ? dbCards.map(card => `
-        <div class="card pad word-item">
-          <div>
-            <div class="row" style="align-items:center;margin-bottom:6px"><strong>${escapeHtml(card.word)}</strong><span class="badge">${card.learned ? "Изучено" : "В процессе"}</span><span class="badge">${escapeHtml(getReviewStatus(card.nextReviewAt))}</span></div>
-            <div>${escapeHtml(card.translation)}</div>
-            ${card.notes ? `<div class="small muted" style="margin-top:6px">Категория: ${escapeHtml(card.notes)}</div>` : ""}
-            <div class="small muted" style="margin-top:6px">Повторений: ${card.repetition} · Интервал: ${card.interval || 0} дн.</div>
-          </div>
-          <div class="actions-stack">
-            <button class="btn" data-speak-card="${card.id}">Озвучить</button>
-            <button class="btn" data-toggle-card="${card.id}">${card.learned ? "Снять статус" : "Изучено"}</button>
-            <button class="btn" data-delete-card="${card.id}">Удалить</button>
-          </div>
-        </div>
-      `).join("") : `<div class="card pad muted">Ничего не найдено.</div>`;
-
-      // tabs
-      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.tab === state.ui.activeTab));
-      document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.toggle('active', panel.id === `panel-${state.ui.activeTab}`));
-
-      save();
-      renderMessage();
-    }
-
-    function renderAnswerFeedback() {
-      const holder = $("answerFeedback");
-      const data = state.ui.answerFeedback;
-      if (!data) { holder.innerHTML = ""; return; }
-      holder.innerHTML = `<div class="message ${data.isCorrect ? 'success' : 'error'}">${data.isCorrect ? 'Верно!' : `Правильный ответ: ${escapeHtml(data.expected)}`}</div>`;
-    }
-
-    function statCard(label, value, progress, hasBar) {
-      return `<div class="card pad"><div class="small muted">${label}</div><div class="stat-num">${value}</div>${hasBar ? `<div class="progress"><div style="width:${progress}%"></div></div>` : ''}</div>`;
-    }
-
-    function fillCategorySelect(select, categories, selected) {
-      select.innerHTML = categories.map(category => `<option value="${category}">${escapeHtml(category === ALL_CATEGORIES ? 'Все категории' : category)}</option>`).join('');
-      select.value = selected;
-    }
-
-    function toggleSectionUI(id, isOpen, btnId) {
-      const section = $(id);
-      const btn = $(btnId);
-      section.classList.toggle('open', isOpen);
-      if (btn) btn.textContent = isOpen ? 'Скрыть' : 'Показать';
-    }
-
-    // Events
-    document.addEventListener('click', (e) => {
-      const tab = e.target.closest('.tab-btn');
-      if (tab) { state.ui.activeTab = tab.dataset.tab; render(); return; }
-
-      const langBtn = e.target.closest('[data-lang]');
-      if (langBtn) {
-        state.ui.activeLanguageId = langBtn.dataset.lang;
-        state.ui.categoryFilter = ALL_CATEGORIES;
-        state.ui.search = '';
-        resetStudyState();
-        state.ui.showStudySettings = false;
-        render();
-        return;
-      }
-
-      const toggle = e.target.closest('[data-toggle]');
-      if (toggle) {
-        const id = toggle.dataset.toggle;
-        if (id === 'languagesSection') state.ui.showLanguageManager = !state.ui.showLanguageManager;
-        if (id === 'studySettingsSection') state.ui.showStudySettings = !state.ui.showStudySettings;
-        render();
-        return;
-      }
-
-      if (e.target.closest('#toggleStatsBtn')) { state.ui.showStats = !state.ui.showStats; render(); return; }
-      if (e.target.closest('#flashcardBtn')) {
-        if (state.ui.studyMode === 'flip' && currentCard()) { state.ui.isFlipped = !state.ui.isFlipped; render(); }
-        return;
-      }
-      if (e.target.closest('#prevBtn')) { prevCard(); return; }
-      if (e.target.closest('#nextBtn')) { nextCard(); return; }
-      if (e.target.closest('#speakBtn')) { const lang = activeLanguage(); const card = currentCard(); if (card && lang) speakText(card.word, lang.speechLang); return; }
-      if (e.target.closest('#toggleLearnedBtn')) { const card = currentCard(); if (card) toggleLearned(card.id); return; }
-      if (e.target.closest('#exportJsonBtn')) { exportJson(); return; }
-      if (e.target.closest('#exportTxtBtn')) { exportTxt(); return; }
-      if (e.target.closest('#shuffleBtn')) { shuffleCards(); return; }
-      if (e.target.closest('#resetBtn')) { resetLanguage(); return; }
-      if (e.target.closest('#bulkAddBtn')) { addBulkCards(); return; }
-      if (e.target.closest('#clearTemplateBtn')) { const lang = activeLanguage(); if (lang) { lang.bulkTemplate = `${lang.frontLanguage}\t${lang.backLanguage}\tТема (Категория)`; render(); } return; }
-      if (e.target.closest('#checkAnswerBtn')) { checkTypedAnswer(); return; }
-      if (e.target.closest('#showAnswerBtn')) { revealTypedAnswer(); return; }
-
-      const rateBtn = e.target.closest('[data-rate]');
-      if (rateBtn) { rateCard(Number(rateBtn.dataset.rate)); return; }
-      const speakCard = e.target.closest('[data-speak-card]');
-      if (speakCard) { const card = activeLanguage()?.cards.find(c => c.id === speakCard.dataset.speakCard); if (card) speakText(card.word, activeLanguage().speechLang); return; }
-      const toggleCardBtn = e.target.closest('[data-toggle-card]');
-      if (toggleCardBtn) { toggleLearned(toggleCardBtn.dataset.toggleCard); return; }
-      const deleteCardBtn = e.target.closest('[data-delete-card]');
-      if (deleteCardBtn) { deleteCard(deleteCardBtn.dataset.deleteCard); return; }
-    });
-
-    $('addLanguageForm').addEventListener('submit', (e) => {
-      e.preventDefault();
-      const name = $('newLanguageName').value.trim();
-      const front = $('newFrontLanguage').value.trim();
-      const back = $('newBackLanguage').value.trim();
-      const speech = $('newSpeechLang').value;
-      if (!name || !front || !back) return;
-      const language = normalizeLanguage({ name, frontLanguage: front, backLanguage: back, speechLang: speech, bulkTemplate: `${front}\t${back}\tТема (Категория)`, cards: [] });
-      state.languages.push(language);
-      state.ui.activeLanguageId = language.id;
-      $('newLanguageName').value = '';
-      $('newFrontLanguage').value = '';
-      $('newBackLanguage').value = '';
-      $('newSpeechLang').value = 'en-US';
-      state.ui.showLanguageManager = false;
-      setMessage('Языковой набор добавлен.');
-      render();
-    });
-
-    $('addCardForm').addEventListener('submit', (e) => {
-      e.preventDefault();
-      const lang = activeLanguage();
-      if (!lang) return;
-      const word = $('wordInput').value.trim();
-      const translation = $('translationInput').value.trim();
-      const notes = $('notesInput').value.trim();
-      if (!word || !translation) return;
-      lang.cards.unshift(createCard(word, translation, notes));
-      $('wordInput').value = '';
-      $('translationInput').value = '';
-      $('notesInput').value = '';
-      setMessage('Карточка добавлена.');
-      render();
-    });
-
-    $('importFile').addEventListener('change', (e) => {
-      const lang = activeLanguage();
-      const file = e.target.files?.[0];
-      if (!lang || !file) return;
-      const reader = new FileReader();
-      reader.onload = () => {
-        try {
-          const text = String(reader.result);
-          if (file.name.endsWith('.json')) {
-            const data = JSON.parse(text);
-            if (!Array.isArray(data)) throw new Error();
-            lang.cards = data.filter(item => item.word && item.translation).map(normalizeCard);
-          } else {
-            const parsed = parseBulkInput(text);
-            if (!parsed.length) throw new Error();
-            lang.cards = parsed;
-          }
-          resetStudyState();
-          setMessage(`Импортировано карточек: ${lang.cards.length}`);
-          render();
-        } catch {
-          setMessage('Не удалось импортировать файл.', 'error');
-        }
-      };
-      reader.readAsText(file);
-      e.target.value = '';
-    });
-
-    $('statusFilter').addEventListener('change', (e) => { state.ui.filter = e.target.value; $('dbStatusFilter').value = e.target.value; resetStudyState(); render(); });
-    $('dbStatusFilter').addEventListener('change', (e) => { state.ui.filter = e.target.value; $('statusFilter').value = e.target.value; resetStudyState(); render(); });
-    $('categoryFilter').addEventListener('change', (e) => { state.ui.categoryFilter = e.target.value; $('dbCategoryFilter').value = e.target.value; resetStudyState(); render(); });
-    $('dbCategoryFilter').addEventListener('change', (e) => { state.ui.categoryFilter = e.target.value; $('categoryFilter').value = e.target.value; resetStudyState(); render(); });
-    $('sortBySelect').addEventListener('change', (e) => { state.ui.sortBy = e.target.value; render(); });
-    $('searchInput').addEventListener('input', (e) => { state.ui.search = e.target.value; render(); });
-    $('studyModeSelect').addEventListener('change', (e) => { state.ui.studyMode = e.target.value; state.ui.isFlipped = false; state.ui.answerFeedback = null; state.ui.answerInput = ''; render(); });
-    $('speechLangSelect').addEventListener('change', (e) => { const lang = activeLanguage(); if (lang) { lang.speechLang = e.target.value; render(); } });
-    $('frontSideSelect').addEventListener('change', (e) => {
-      const lang = activeLanguage();
-      if (!lang || e.target.value === 'front') return;
-      [lang.frontLanguage, lang.backLanguage] = [lang.backLanguage, lang.frontLanguage];
-      lang.cards = lang.cards.map(card => ({ ...card, word: card.translation, translation: card.word }));
-      lang.bulkTemplate = `${lang.frontLanguage}\t${lang.backLanguage}\tТема (Категория)`;
-      state.ui.answerInput = '';
-      state.ui.answerFeedback = null;
-      state.ui.isFlipped = false;
-      render();
-    });
-    $('answerInput').addEventListener('input', (e) => { state.ui.answerInput = e.target.value; save(); });
-    $('bulkTextarea').addEventListener('input', (e) => { const lang = activeLanguage(); if (lang) { lang.bulkTemplate = e.target.value; save(); } });
-
-    function prevCard() { const cards = studyCards(); if (!cards.length) return; state.ui.studyIndex = (state.ui.studyIndex - 1 + cards.length) % cards.length; state.ui.isFlipped = false; state.ui.answerInput=''; state.ui.answerFeedback=null; render(); }
-    function nextCard() { const cards = studyCards(); if (!cards.length) return; state.ui.studyIndex = (state.ui.studyIndex + 1) % cards.length; state.ui.isFlipped = false; state.ui.answerInput=''; state.ui.answerFeedback=null; render(); }
-    function toggleLearned(id) { const lang = activeLanguage(); if (!lang) return; lang.cards = lang.cards.map(c => c.id === id ? { ...c, learned: !c.learned } : c); render(); }
-    function deleteCard(id) { const lang = activeLanguage(); if (!lang) return; lang.cards = lang.cards.filter(c => c.id !== id); resetStudyState(); setMessage('Карточка удалена.'); render(); }
-    function shuffleCards() { const lang = activeLanguage(); if (!lang) return; const pool = [...lang.cards]; for (let i=pool.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [pool[i],pool[j]]=[pool[j],pool[i]]; } lang.cards = pool; resetStudyState(); render(); }
-    function resetLanguage() { const lang = activeLanguage(); if (!lang) return; const fallback = DEFAULT_LANGUAGES.find(l => l.id === lang.id); if (fallback) Object.assign(lang, normalizeLanguage(fallback)); else lang.cards = []; state.ui.categoryFilter = ALL_CATEGORIES; state.ui.search=''; resetStudyState(); setMessage('Активный набор сброшен.'); render(); }
-    function addBulkCards() { const lang = activeLanguage(); if (!lang) return; const parsed = parseBulkInput(lang.bulkTemplate || ''); if (!parsed.length) return setMessage('Не удалось распознать данные.', 'error'); lang.cards = [...parsed.map(item => createCard(item.word, item.translation, item.notes)), ...lang.cards]; resetStudyState(); setMessage(`Добавлено карточек: ${parsed.length}`); render(); }
-    function checkTypedAnswer() { const card = currentCard(); if (!card) return; const ok = normalizeAnswer(state.ui.answerInput) === normalizeAnswer(card.translation) && normalizeAnswer(state.ui.answerInput).length > 0; state.ui.answerFeedback = { isCorrect: ok, expected: card.translation }; render(); }
-    function revealTypedAnswer() { const card = currentCard(); if (!card) return; state.ui.answerFeedback = { isCorrect: false, expected: card.translation }; render(); }
-    function rateCard(quality) { const card = currentCard(); const lang = activeLanguage(); if (!card || !lang) return; lang.cards = lang.cards.map(c => c.id === card.id ? calculateSpacedRepetition(c, quality) : c); nextCard(); }
-    function speakText(text, lang) { if (!('speechSynthesis' in window) || !text) return; window.speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text); u.lang = lang || 'en-US'; u.rate = 0.95; window.speechSynthesis.speak(u); }
-    function exportJson() { const lang = activeLanguage(); if (!lang) return; const blob = new Blob([JSON.stringify(lang.cards, null, 2)], { type: 'application/json' }); downloadBlob(blob, `${slugify(lang.name)}-flashcards.json`); }
-    function exportTxt() { const lang = activeLanguage(); if (!lang) return; const header = [lang.frontLanguage, lang.backLanguage, 'Тема (Категория)'].join('\t'); const lines = lang.cards.map(c => [c.word, c.translation, c.notes || ''].join('\t')); const blob = new Blob([[header, ...lines].join('\n')], { type: 'text/plain;charset=utf-8' }); downloadBlob(blob, `${slugify(lang.name)}-flashcards.txt`); }
-    function downloadBlob(blob, name) { const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = name; a.click(); URL.revokeObjectURL(url); }
-    function slugify(str) { return String(str).toLowerCase().replace(/\s+/g, '-').replace(/[^a-zа-яё0-9\-]+/gi, ''); }
-
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => navigator.serviceWorker.register('./service-worker.js').catch(() => {}));
-    }
-
-    render();
-  </script>
+if ("serviceWorker" in navigator) window.addEventListener("load", ()=>navigator.serviceWorker.register("./service-worker.js").catch(()=>{}));
+</script>
 </body>
 </html>

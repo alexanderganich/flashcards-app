@@ -1,31 +1,21 @@
-# Language Flashcards — GitHub Pages ready
+# Language Flashcards
 
-## Что загружать в GitHub
-Загрузи **все файлы из этой папки** в корень репозитория:
-- `index.html`
-- `manifest.webmanifest`
-- `service-worker.js`
-- `README.md`
-- `.nojekyll`
+Готовая статическая версия для GitHub Pages.
 
-## Как опубликовать
-1. Создай новый репозиторий на GitHub.
-2. Загрузи содержимое этой папки в корень репозитория.
-3. Открой `Settings` → `Pages`.
-4. В `Build and deployment` выбери:
-   - `Source`: **Deploy from a branch**
-   - `Branch`: **main**
-   - `Folder`: **/ (root)**
-5. Сохрани настройки.
-6. Через 1–5 минут сайт будет доступен по адресу:
-   `https://ТВОЙ-ЛОГИН.github.io/ИМЯ-РЕПОЗИТОРИЯ/`
+## Публикация
+1. Загрузите все файлы этого архива в корень репозитория `flashcards-app`
+2. В GitHub откройте Settings → Pages
+3. Source: Deploy from a branch
+4. Branch: main / (root)
+5. Откройте:
+   https://<ваш-логин>.github.io/flashcards-app/
 
 ## Установка как приложение
-### iPhone / iPad
-Открой сайт в Safari → Поделиться → **На экран «Домой»**.
+- iPhone / iPad: Safari → Поделиться → На экран «Домой»
+- MacBook: Safari → Файл → Добавить в Dock
 
-### MacBook
-Открой сайт в Safari → **Файл → Добавить в Dock**.
-
-## Хранение данных
-Данные хранятся локально в браузере устройства через `localStorage`.
+## Обновления
+- улучшенная озвучка в стиле Duolingo
+- автоопределение языка
+- медленное воспроизведение
+- лучшая совместимость с Safari / iPhone
