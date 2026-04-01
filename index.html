@@ -1,0 +1,859 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Language Flashcards</title>
+  <meta name="theme-color" content="#0f172a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Flashcards" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --muted: #64748b;
+      --text: #0f172a;
+      --border: #e2e8f0;
+      --accent: #0f172a;
+      --accent-2: #334155;
+      --success-bg: #ecfdf5;
+      --success-text: #047857;
+      --error-bg: #fef2f2;
+      --error-text: #b91c1c;
+      --shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+      --radius: 20px;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: var(--text); background: var(--bg); }
+    body { min-height: 100vh; }
+    .app { max-width: 1200px; margin: 0 auto; padding: 12px; display: grid; gap: 16px; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); }
+    .pad { padding: 16px; }
+    .header { display: grid; gap: 12px; }
+    .title { font-size: 28px; font-weight: 800; letter-spacing: -0.02em; margin: 0; }
+    .subtitle { margin: 0; color: var(--muted); font-size: 14px; }
+    .row { display: flex; gap: 10px; flex-wrap: wrap; }
+    .row-between { display: flex; gap: 10px; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+    .btn, .file-label, select, input, textarea {
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      font: inherit;
+    }
+    .btn, .file-label {
+      min-height: 42px;
+      padding: 10px 14px;
+      background: white;
+      color: var(--text);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      text-decoration: none;
+      user-select: none;
+    }
+    .btn.primary { background: var(--accent); color: white; border-color: var(--accent); }
+    .btn.ghost { background: transparent; }
+    .btn.full { width: 100%; }
+    input, textarea, select {
+      width: 100%;
+      padding: 12px 14px;
+      background: white;
+      color: var(--text);
+    }
+    textarea { resize: vertical; min-height: 120px; }
+    .grid { display: grid; gap: 12px; }
+    .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .grid-5 { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+    .language-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+    .badge { display: inline-flex; align-items: center; gap: 6px; border-radius: 999px; padding: 6px 10px; border: 1px solid var(--border); font-size: 12px; background: #fff; }
+    .muted { color: var(--muted); }
+    .message { padding: 12px 14px; border-radius: 18px; font-size: 14px; }
+    .message.success { background: var(--success-bg); color: var(--success-text); border: 1px solid #a7f3d0; }
+    .message.error { background: var(--error-bg); color: var(--error-text); border: 1px solid #fecaca; }
+    .stats { display: grid; gap: 12px; }
+    .stat-num { font-size: 30px; font-weight: 800; }
+    .progress { margin-top: 8px; height: 8px; background: #e2e8f0; border-radius: 999px; overflow: hidden; }
+    .progress > div { height: 100%; background: var(--accent); }
+    .tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; padding: 6px; background: white; border: 1px solid var(--border); border-radius: 18px; }
+    .tab-btn { min-height: 42px; border: 0; border-radius: 14px; background: transparent; cursor: pointer; font: inherit; }
+    .tab-btn.active { background: var(--accent); color: white; }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+    .study-layout { display: grid; gap: 16px; }
+    .flashcard {
+      min-height: 300px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 20px;
+      border-radius: 28px;
+      border: 1px solid var(--border);
+      background: white;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+    }
+    .flashcard-label { font-size: 12px; text-transform: uppercase; letter-spacing: .25em; color: #94a3b8; margin-bottom: 12px; }
+    .flashcard-main { font-size: clamp(28px, 5vw, 54px); font-weight: 800; line-height: 1.05; word-break: break-word; }
+    .hint { margin-top: 18px; color: #94a3b8; font-size: 14px; }
+    .collapsible-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; cursor: pointer; }
+    .collapsible-body { display: none; }
+    .collapsible.open .collapsible-body { display: block; }
+    .small { font-size: 13px; }
+    .card-list { display: grid; gap: 12px; }
+    .word-item { display: grid; gap: 12px; }
+    .actions-stack { display: grid; gap: 8px; }
+    .hidden-input { display: none; }
+    .sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
+    @media (min-width: 768px) {
+      .app { padding: 16px; gap: 20px; }
+      .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .study-layout { grid-template-columns: 1.15fr .85fr; }
+      .actions-stack { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (min-width: 1024px) {
+      .app { padding: 24px; }
+      .header { grid-template-columns: 1fr auto; align-items: start; }
+      .stats { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+      .actions-stack { grid-template-columns: unset; display: flex; flex-wrap: wrap; }
+      .word-item { grid-template-columns: 1fr auto; align-items: center; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <section class="header">
+      <div>
+        <h1 class="title">Language Flashcards</h1>
+        <p class="subtitle">Готовая версия для GitHub Pages. Работает на iPhone, iPad и MacBook как PWA.</p>
+      </div>
+      <div class="language-tabs" id="languageTabs"></div>
+    </section>
+
+    <section class="card collapsible" id="languagesSection">
+      <div class="pad collapsible-head" data-toggle="languagesSection">
+        <strong>Языки</strong>
+        <button class="btn ghost" type="button" id="toggleLanguagesBtn">Показать</button>
+      </div>
+      <div class="pad collapsible-body">
+        <form class="grid" id="addLanguageForm">
+          <div class="grid grid-4" style="gap:10px">
+            <input id="newLanguageName" placeholder="Название набора" />
+            <input id="newFrontLanguage" placeholder="Язык спереди" />
+            <input id="newBackLanguage" placeholder="Язык сзади" />
+            <select id="newSpeechLang">
+              <option value="en-US">English</option>
+              <option value="es-ES">Español</option>
+              <option value="de-DE">Deutsch</option>
+              <option value="fr-FR">Français</option>
+              <option value="it-IT">Italiano</option>
+              <option value="pl-PL">Polski</option>
+              <option value="uk-UA">Українська</option>
+              <option value="ru-RU">Русский</option>
+            </select>
+          </div>
+          <button class="btn primary" type="submit">Добавить язык</button>
+        </form>
+      </div>
+    </section>
+
+    <section>
+      <div class="row-between" style="margin-bottom:10px">
+        <button class="btn" type="button" id="toggleStatsBtn">Показать статистику</button>
+        <span class="small muted">Фокус на карточках</span>
+      </div>
+      <div class="stats" id="statsGrid" hidden></div>
+    </section>
+
+    <section class="row-between">
+      <div>
+        <h2 id="activeSetTitle" style="margin:0 0 6px;font-size:26px"></h2>
+        <p class="subtitle" id="activeDirection"></p>
+      </div>
+      <div class="actions-stack">
+        <button class="btn" type="button" id="exportJsonBtn">Экспорт JSON</button>
+        <button class="btn" type="button" id="exportTxtBtn">Экспорт TXT</button>
+        <label class="file-label">
+          Импорт
+          <input class="hidden-input" type="file" id="importFile" accept=".json,.txt" />
+        </label>
+        <button class="btn" type="button" id="shuffleBtn">Перемешать</button>
+        <button class="btn" type="button" id="resetBtn">Сброс</button>
+      </div>
+    </section>
+
+    <section id="messageBox"></section>
+
+    <section>
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="study">Учить</button>
+        <button class="tab-btn" data-tab="add">Добавить слова</button>
+        <button class="tab-btn" data-tab="database">База слов</button>
+      </div>
+    </section>
+
+    <section class="tab-panel active" id="panel-study">
+      <div class="study-layout">
+        <div class="card pad">
+          <div class="row-between small muted" style="margin-bottom:12px">
+            <span id="studyCounter"></span>
+            <span class="badge" id="nextReviewBadge"></span>
+          </div>
+          <button class="flashcard" type="button" id="flashcardBtn">
+            <div class="flashcard-label" id="flashcardLabel"></div>
+            <div class="flashcard-main" id="flashcardMain"></div>
+            <div class="small muted" id="flashcardCategory"></div>
+            <div class="hint" id="flashcardHint"></div>
+          </button>
+          <div class="actions-stack" style="margin-top:12px">
+            <button class="btn" type="button" id="prevBtn">Назад</button>
+            <button class="btn primary" type="button" id="nextBtn">Следующая</button>
+            <button class="btn" type="button" id="speakBtn">Озвучить</button>
+            <button class="btn" type="button" id="toggleLearnedBtn">Отметить как изучено</button>
+          </div>
+          <div id="flipRatingBox" class="grid grid-3" style="gap:8px;margin-top:12px;display:none">
+            <button class="btn" type="button" data-rate="2">Сложно</button>
+            <button class="btn" type="button" data-rate="4">Нормально</button>
+            <button class="btn primary" type="button" data-rate="5">Легко</button>
+          </div>
+          <div id="typeModeBox" class="card pad" style="margin-top:12px; display:none; box-shadow:none; background:#f8fafc">
+            <div class="small muted" id="typeModePrompt"></div>
+            <div style="margin-top:10px"><input id="answerInput" placeholder="Введите ответ" /></div>
+            <div id="answerFeedback" style="margin-top:10px"></div>
+            <div class="row" style="margin-top:10px">
+              <button class="btn primary" type="button" id="checkAnswerBtn">Проверить</button>
+              <button class="btn" type="button" id="showAnswerBtn">Показать ответ</button>
+            </div>
+            <div class="grid grid-3" style="gap:8px;margin-top:12px">
+              <button class="btn" type="button" data-rate="2">Сложно</button>
+              <button class="btn" type="button" data-rate="4">Нормально</button>
+              <button class="btn primary" type="button" data-rate="5">Легко</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card collapsible" id="studySettingsSection">
+          <div class="pad collapsible-head" data-toggle="studySettingsSection">
+            <strong>Настройки изучения</strong>
+            <button class="btn ghost" type="button" id="toggleSettingsBtn">Показать</button>
+          </div>
+          <div class="pad collapsible-body grid">
+            <label class="grid">Фильтр по статусу
+              <select id="statusFilter">
+                <option value="all">Все карточки</option>
+                <option value="learned">Только изученные</option>
+                <option value="not-learned">Только не изученные</option>
+              </select>
+            </label>
+            <label class="grid">Фильтр по категории
+              <select id="categoryFilter"></select>
+            </label>
+            <label class="grid">Изначальная сторона карточки
+              <select id="frontSideSelect"></select>
+            </label>
+            <label class="grid">Режим изучения
+              <select id="studyModeSelect">
+                <option value="flip">Переворот карточки</option>
+                <option value="type">Вписать ответ</option>
+              </select>
+            </label>
+            <label class="grid">Язык озвучки
+              <select id="speechLangSelect">
+                <option value="en-US">English</option>
+                <option value="es-ES">Español</option>
+                <option value="de-DE">Deutsch</option>
+                <option value="fr-FR">Français</option>
+                <option value="it-IT">Italiano</option>
+                <option value="pl-PL">Polski</option>
+                <option value="uk-UA">Українська</option>
+                <option value="ru-RU">Русский</option>
+              </select>
+            </label>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="tab-panel" id="panel-add">
+      <div class="grid">
+        <div class="card pad">
+          <h3 style="margin-top:0">Добавить новую карточку</h3>
+          <form class="grid" id="addCardForm">
+            <div class="grid grid-2">
+              <label class="grid"><span id="addWordLabel">Язык 1</span><input id="wordInput" /></label>
+              <label class="grid"><span id="addTranslationLabel">Язык 2</span><input id="translationInput" /></label>
+            </div>
+            <label class="grid">Категория / заметка<textarea id="notesInput" placeholder="Например: Приветствия"></textarea></label>
+            <button class="btn primary" type="submit">Сохранить карточку</button>
+          </form>
+        </div>
+        <div class="card pad">
+          <h3 style="margin-top:0">Пакетное добавление</h3>
+          <p class="subtitle">Поддерживается таблица с колонками: <span id="bulkFormatLabel"></span> → Тема (Категория), либо формат слово | перевод | заметка.</p>
+          <textarea id="bulkTextarea" style="min-height:220px"></textarea>
+          <div class="row" style="margin-top:10px">
+            <button class="btn primary" type="button" id="bulkAddBtn">Добавить списком</button>
+            <button class="btn" type="button" id="clearTemplateBtn">Очистить шаблон</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="tab-panel" id="panel-database">
+      <div class="card pad">
+        <div class="grid" style="gap:10px">
+          <div class="grid grid-4">
+            <input id="searchInput" placeholder="Поиск по слову, переводу или заметке" />
+            <select id="dbStatusFilter">
+              <option value="all">Все</option>
+              <option value="learned">Изученные</option>
+              <option value="not-learned">Не изученные</option>
+            </select>
+            <select id="dbCategoryFilter"></select>
+            <select id="sortBySelect">
+              <option value="newest">Сначала новые</option>
+              <option value="oldest">Сначала старые</option>
+              <option value="az">A–Z</option>
+              <option value="za">Z–A</option>
+              <option value="review">По дате повторения</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="small muted" id="dbSummary" style="margin-top:10px"></div>
+      <div class="card-list" id="databaseList" style="margin-top:12px"></div>
+    </section>
+  </main>
+
+  <script>
+    const STORAGE_KEY = "language-flashcards-db-gh-v1";
+    const UI_KEY = "language-flashcards-ui-gh-v1";
+    const DAY_MS = 24 * 60 * 60 * 1000;
+    const ALL_CATEGORIES = "__all_categories__";
+
+    function createCard(word, translation, notes = "") {
+      return {
+        id: crypto.randomUUID(),
+        word,
+        translation,
+        notes,
+        learned: false,
+        createdAt: Date.now(),
+        repetition: 0,
+        interval: 0,
+        easeFactor: 2.5,
+        nextReviewAt: Date.now(),
+        lastReviewedAt: null,
+      };
+    }
+
+    const DEFAULT_LANGUAGES = [
+      {
+        id: "es-uk",
+        name: "Испанский → Украинский",
+        frontLanguage: "Іспанська",
+        backLanguage: "Українська",
+        speechLang: "es-ES",
+        bulkTemplate: `Іспанська\tУкраїнська\tТема (Категорія)\nHola\tПривіт\tПривітання і ввічливість\nBuenos días\tДоброго ранку\tПривітання і ввічливість\nBuenas tardes\tДоброго дня\tПривітання і ввічливість\nBuenas noches\tДоброї ночі\tПривітання і ввічливість\nAdiós\tДо побачення\tПривітання і ввічливість\nHasta luego\tДо зустрічі\tПривітання і ввічливість\nPor favor\tБудь ласка\tПривітання і ввічливість`,
+        cards: [createCard("Hola", "Привіт", "Привітання і ввічливість"), createCard("Gracias", "Дякую", "Привітання і ввічливість"), createCard("Casa", "Дім", "Дім і побут")],
+      },
+      {
+        id: "en-ru",
+        name: "Английский → Русский",
+        frontLanguage: "English",
+        backLanguage: "Русский",
+        speechLang: "en-US",
+        bulkTemplate: `English\tРусский\tТема (Категория)\nHello\tПривет\tПриветствия\nThank you\tСпасибо\tПриветствия\nHouse\tДом\tДом и быт`,
+        cards: [createCard("Hello", "Привет", "Приветствия"), createCard("Thank you", "Спасибо", "Приветствия"), createCard("House", "Дом", "Дом и быт")],
+      },
+    ];
+
+    const defaultUI = {
+      activeLanguageId: DEFAULT_LANGUAGES[0].id,
+      filter: "all",
+      categoryFilter: ALL_CATEGORIES,
+      sortBy: "newest",
+      studyMode: "flip",
+      search: "",
+      studyIndex: 0,
+      isFlipped: false,
+      answerInput: "",
+      answerFeedback: null,
+      showStats: false,
+      showLanguageManager: false,
+      showStudySettings: false,
+      activeTab: "study",
+      message: null,
+    };
+
+    function normalizeCard(item) {
+      return {
+        id: item.id || crypto.randomUUID(),
+        word: String(item.word || "").trim(),
+        translation: String(item.translation || "").trim(),
+        notes: String(item.notes || "").trim(),
+        learned: Boolean(item.learned),
+        createdAt: Number(item.createdAt || Date.now()),
+        repetition: Number(item.repetition || 0),
+        interval: Number(item.interval || 0),
+        easeFactor: Number(item.easeFactor || 2.5),
+        nextReviewAt: Number(item.nextReviewAt || Date.now()),
+        lastReviewedAt: item.lastReviewedAt ? Number(item.lastReviewedAt) : null,
+      };
+    }
+
+    function normalizeLanguage(language) {
+      return {
+        id: language.id || crypto.randomUUID(),
+        name: String(language.name || "Новый язык").trim(),
+        frontLanguage: String(language.frontLanguage || "Язык 1").trim(),
+        backLanguage: String(language.backLanguage || "Язык 2").trim(),
+        speechLang: String(language.speechLang || "en-US"),
+        bulkTemplate: String(language.bulkTemplate || `${language.frontLanguage || "Язык 1"}\t${language.backLanguage || "Язык 2"}\tТема (Категория)`),
+        cards: Array.isArray(language.cards) ? language.cards.map(normalizeCard) : [],
+      };
+    }
+
+    function loadLanguages() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return DEFAULT_LANGUAGES.map(normalizeLanguage);
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed.map(normalizeLanguage) : DEFAULT_LANGUAGES.map(normalizeLanguage);
+      } catch {
+        return DEFAULT_LANGUAGES.map(normalizeLanguage);
+      }
+    }
+
+    function loadUI() {
+      try {
+        const raw = localStorage.getItem(UI_KEY);
+        if (!raw) return { ...defaultUI };
+        return { ...defaultUI, ...JSON.parse(raw) };
+      } catch {
+        return { ...defaultUI };
+      }
+    }
+
+    const state = { languages: loadLanguages(), ui: loadUI() };
+
+    const $ = (id) => document.getElementById(id);
+
+    function save() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state.languages));
+      localStorage.setItem(UI_KEY, JSON.stringify(state.ui));
+    }
+
+    function activeLanguage() {
+      return state.languages.find((l) => l.id === state.ui.activeLanguageId) || state.languages[0] || null;
+    }
+
+    function setMessage(text, type = "success") {
+      state.ui.message = text ? { text, type } : null;
+      renderMessage();
+      save();
+    }
+
+    function renderMessage() {
+      const box = $("messageBox");
+      if (!state.ui.message) {
+        box.innerHTML = "";
+        return;
+      }
+      box.innerHTML = `<div class="message ${state.ui.message.type}">${escapeHtml(state.ui.message.text)}</div>`;
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function getCategories(cards) {
+      const set = new Set(cards.map(c => (c.notes || "").trim()).filter(Boolean));
+      return [ALL_CATEGORIES, ...Array.from(set).sort((a,b) => a.localeCompare(b, "uk"))];
+    }
+
+    function filterByLearned(cards) {
+      if (state.ui.filter === "learned") return cards.filter(c => c.learned);
+      if (state.ui.filter === "not-learned") return cards.filter(c => !c.learned);
+      return cards;
+    }
+
+    function filterByCategory(cards) {
+      if (state.ui.categoryFilter === ALL_CATEGORIES) return cards;
+      return cards.filter(c => (c.notes || "Без категории") === state.ui.categoryFilter);
+    }
+
+    function filteredCards() {
+      const lang = activeLanguage();
+      if (!lang) return [];
+      let cards = filterByCategory(filterByLearned([...lang.cards]));
+      const q = state.ui.search.trim().toLowerCase();
+      if (q) cards = cards.filter(c => c.word.toLowerCase().includes(q) || c.translation.toLowerCase().includes(q) || (c.notes || "").toLowerCase().includes(q));
+      if (state.ui.sortBy === "newest") cards.sort((a,b) => b.createdAt - a.createdAt);
+      if (state.ui.sortBy === "oldest") cards.sort((a,b) => a.createdAt - b.createdAt);
+      if (state.ui.sortBy === "az") cards.sort((a,b) => a.word.localeCompare(b.word));
+      if (state.ui.sortBy === "za") cards.sort((a,b) => b.word.localeCompare(a.word));
+      if (state.ui.sortBy === "review") cards.sort((a,b) => (a.nextReviewAt || 0) - (b.nextReviewAt || 0));
+      return cards;
+    }
+
+    function studyCards() {
+      const base = filterByCategory(filterByLearned(activeLanguage()?.cards || []));
+      const due = base.filter(card => (card.nextReviewAt || 0) <= Date.now());
+      return due.length ? due : base;
+    }
+
+    function currentCard() {
+      const cards = studyCards();
+      if (!cards.length) return null;
+      return cards[state.ui.studyIndex % cards.length];
+    }
+
+    function getReviewStatus(ts) {
+      const diff = ts - Date.now();
+      if (diff <= 0) return "Сейчас";
+      const days = Math.ceil(diff / DAY_MS);
+      if (days === 1) return "Завтра";
+      return `Через ${days} дн.`;
+    }
+
+    function calculateSpacedRepetition(card, quality) {
+      const now = Date.now();
+      let repetition = card.repetition || 0;
+      let interval = card.interval || 0;
+      let easeFactor = card.easeFactor || 2.5;
+      if (quality < 3) {
+        repetition = 0;
+        interval = 1;
+        easeFactor = Math.max(1.3, easeFactor - 0.2);
+      } else {
+        repetition += 1;
+        if (repetition === 1) interval = 1;
+        else if (repetition === 2) interval = 3;
+        else interval = Math.max(1, Math.round(interval * easeFactor));
+        easeFactor = Math.max(1.3, easeFactor + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02)));
+      }
+      return { ...card, learned: quality >= 4 ? true : card.learned, repetition, interval, easeFactor: Number(easeFactor.toFixed(2)), lastReviewedAt: now, nextReviewAt: now + interval * DAY_MS };
+    }
+
+    function updateActiveLanguage(updater) {
+      const lang = activeLanguage();
+      if (!lang) return;
+      state.languages = state.languages.map(item => item.id === lang.id ? updater(item) : item);
+    }
+
+    function parseBulkInput(text) {
+      const lines = text.split(/\r?\n/).map(line => line.trim()).filter(Boolean);
+      if (!lines.length) return [];
+      if (lines.some(line => line.includes("\t"))) {
+        return lines.slice(1).map(line => {
+          const parts = line.split("\t").map(v => v.trim());
+          return { word: parts[0] || "", translation: parts[1] || "", notes: parts[2] || "" };
+        }).filter(item => item.word && item.translation).map(normalizeCard);
+      }
+      return lines.map(line => {
+        const parts = line.split("|").map(v => v.trim());
+        return { word: parts[0] || "", translation: parts[1] || "", notes: parts.slice(2).join(" | ") || "" };
+      }).filter(item => item.word && item.translation).map(normalizeCard);
+    }
+
+    function normalizeAnswer(v) {
+      return String(v).toLowerCase().trim().replace(/\s+/g, " ");
+    }
+
+    function resetStudyState() {
+      state.ui.studyIndex = 0;
+      state.ui.isFlipped = false;
+      state.ui.answerInput = "";
+      state.ui.answerFeedback = null;
+    }
+
+    function render() {
+      const lang = activeLanguage();
+      if (!lang) return;
+      const cards = lang.cards || [];
+      const categories = getCategories(cards);
+      const sCards = studyCards();
+      const card = currentCard();
+      if (state.ui.studyIndex >= sCards.length) state.ui.studyIndex = 0;
+
+      // Header
+      $("languageTabs").innerHTML = state.languages.map(language => `<button class="btn ${language.id === state.ui.activeLanguageId ? 'primary' : ''}" data-lang="${language.id}">${escapeHtml(language.name)}</button>`).join("");
+      $("activeSetTitle").textContent = lang.name;
+      $("activeDirection").textContent = `Текущее направление: ${lang.frontLanguage} → ${lang.backLanguage}`;
+
+      // collapsibles
+      toggleSectionUI("languagesSection", state.ui.showLanguageManager, "toggleLanguagesBtn");
+      toggleSectionUI("studySettingsSection", state.ui.showStudySettings, "toggleSettingsBtn");
+      $("toggleStatsBtn").textContent = state.ui.showStats ? "Скрыть статистику" : "Показать статистику";
+      const statsGrid = $("statsGrid");
+      statsGrid.hidden = !state.ui.showStats;
+      const learnedCount = cards.filter(c => c.learned).length;
+      const dueCount = cards.filter(c => (c.nextReviewAt || 0) <= Date.now()).length;
+      const progress = cards.length ? Math.round((learnedCount / cards.length) * 100) : 0;
+      statsGrid.innerHTML = [
+        statCard("Всего карточек", cards.length, progress, false),
+        statCard("Изучено", learnedCount),
+        statCard("На повторение", dueCount),
+        statCard("Осталось", Math.max(cards.length - learnedCount, 0)),
+        statCard("Прогресс", `${progress}%`, progress, true),
+      ].join("");
+
+      // selects and form labels
+      fillCategorySelect($("categoryFilter"), categories, state.ui.categoryFilter);
+      fillCategorySelect($("dbCategoryFilter"), categories, state.ui.categoryFilter);
+      $("statusFilter").value = state.ui.filter;
+      $("dbStatusFilter").value = state.ui.filter;
+      $("sortBySelect").value = state.ui.sortBy;
+      $("searchInput").value = state.ui.search;
+      $("studyModeSelect").value = state.ui.studyMode;
+      $("speechLangSelect").value = lang.speechLang;
+      $("frontSideSelect").innerHTML = `
+        <option value="front">${escapeHtml(lang.frontLanguage)} спереди</option>
+        <option value="back">${escapeHtml(lang.backLanguage)} спереди</option>
+      `;
+      $("frontSideSelect").value = "front";
+      $("addWordLabel").textContent = lang.frontLanguage;
+      $("addTranslationLabel").textContent = lang.backLanguage;
+      $("bulkFormatLabel").textContent = `${lang.frontLanguage} → ${lang.backLanguage}`;
+      $("bulkTextarea").value = lang.bulkTemplate || `${lang.frontLanguage}\t${lang.backLanguage}\tТема (Категория)`;
+
+      // study card
+      $("studyCounter").textContent = sCards.length ? `Карточка ${state.ui.studyIndex + 1} из ${sCards.length}` : "Нет карточек";
+      $("nextReviewBadge").textContent = card ? `Следующее повторение: ${getReviewStatus(card.nextReviewAt)}` : "";
+      const showBack = state.ui.studyMode === "flip" && state.ui.isFlipped;
+      $("flashcardLabel").textContent = showBack ? lang.backLanguage : lang.frontLanguage;
+      $("flashcardMain").textContent = card ? (showBack ? card.translation : card.word) : "Добавьте новые слова";
+      $("flashcardCategory").textContent = card?.notes ? `Категория: ${card.notes}` : "";
+      $("flashcardHint").textContent = state.ui.studyMode === "flip" ? `Нажмите, чтобы увидеть ${lang.backLanguage}` : `Введите ${lang.backLanguage} ниже`;
+      $("toggleLearnedBtn").textContent = card?.learned ? "Снять статус изучено" : "Отметить как изучено";
+      $("flashcardBtn").disabled = !card;
+      $("flipRatingBox").style.display = state.ui.studyMode === "flip" && state.ui.isFlipped && card ? "grid" : "none";
+      $("typeModeBox").style.display = state.ui.studyMode === "type" && card ? "block" : "none";
+      $("typeModePrompt").innerHTML = card ? `Впишите ${escapeHtml(lang.backLanguage)} для: <strong>${escapeHtml(card.word)}</strong>` : "";
+      $("answerInput").value = state.ui.answerInput || "";
+      renderAnswerFeedback();
+
+      // database
+      const dbCards = filteredCards();
+      $("dbSummary").textContent = `Категория: ${state.ui.categoryFilter === ALL_CATEGORIES ? "Все категории" : state.ui.categoryFilter} · Найдено карточек: ${dbCards.length}`;
+      $("databaseList").innerHTML = dbCards.length ? dbCards.map(card => `
+        <div class="card pad word-item">
+          <div>
+            <div class="row" style="align-items:center;margin-bottom:6px"><strong>${escapeHtml(card.word)}</strong><span class="badge">${card.learned ? "Изучено" : "В процессе"}</span><span class="badge">${escapeHtml(getReviewStatus(card.nextReviewAt))}</span></div>
+            <div>${escapeHtml(card.translation)}</div>
+            ${card.notes ? `<div class="small muted" style="margin-top:6px">Категория: ${escapeHtml(card.notes)}</div>` : ""}
+            <div class="small muted" style="margin-top:6px">Повторений: ${card.repetition} · Интервал: ${card.interval || 0} дн.</div>
+          </div>
+          <div class="actions-stack">
+            <button class="btn" data-speak-card="${card.id}">Озвучить</button>
+            <button class="btn" data-toggle-card="${card.id}">${card.learned ? "Снять статус" : "Изучено"}</button>
+            <button class="btn" data-delete-card="${card.id}">Удалить</button>
+          </div>
+        </div>
+      `).join("") : `<div class="card pad muted">Ничего не найдено.</div>`;
+
+      // tabs
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.tab === state.ui.activeTab));
+      document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.toggle('active', panel.id === `panel-${state.ui.activeTab}`));
+
+      save();
+      renderMessage();
+    }
+
+    function renderAnswerFeedback() {
+      const holder = $("answerFeedback");
+      const data = state.ui.answerFeedback;
+      if (!data) { holder.innerHTML = ""; return; }
+      holder.innerHTML = `<div class="message ${data.isCorrect ? 'success' : 'error'}">${data.isCorrect ? 'Верно!' : `Правильный ответ: ${escapeHtml(data.expected)}`}</div>`;
+    }
+
+    function statCard(label, value, progress, hasBar) {
+      return `<div class="card pad"><div class="small muted">${label}</div><div class="stat-num">${value}</div>${hasBar ? `<div class="progress"><div style="width:${progress}%"></div></div>` : ''}</div>`;
+    }
+
+    function fillCategorySelect(select, categories, selected) {
+      select.innerHTML = categories.map(category => `<option value="${category}">${escapeHtml(category === ALL_CATEGORIES ? 'Все категории' : category)}</option>`).join('');
+      select.value = selected;
+    }
+
+    function toggleSectionUI(id, isOpen, btnId) {
+      const section = $(id);
+      const btn = $(btnId);
+      section.classList.toggle('open', isOpen);
+      if (btn) btn.textContent = isOpen ? 'Скрыть' : 'Показать';
+    }
+
+    // Events
+    document.addEventListener('click', (e) => {
+      const tab = e.target.closest('.tab-btn');
+      if (tab) { state.ui.activeTab = tab.dataset.tab; render(); return; }
+
+      const langBtn = e.target.closest('[data-lang]');
+      if (langBtn) {
+        state.ui.activeLanguageId = langBtn.dataset.lang;
+        state.ui.categoryFilter = ALL_CATEGORIES;
+        state.ui.search = '';
+        resetStudyState();
+        state.ui.showStudySettings = false;
+        render();
+        return;
+      }
+
+      const toggle = e.target.closest('[data-toggle]');
+      if (toggle) {
+        const id = toggle.dataset.toggle;
+        if (id === 'languagesSection') state.ui.showLanguageManager = !state.ui.showLanguageManager;
+        if (id === 'studySettingsSection') state.ui.showStudySettings = !state.ui.showStudySettings;
+        render();
+        return;
+      }
+
+      if (e.target.closest('#toggleStatsBtn')) { state.ui.showStats = !state.ui.showStats; render(); return; }
+      if (e.target.closest('#flashcardBtn')) {
+        if (state.ui.studyMode === 'flip' && currentCard()) { state.ui.isFlipped = !state.ui.isFlipped; render(); }
+        return;
+      }
+      if (e.target.closest('#prevBtn')) { prevCard(); return; }
+      if (e.target.closest('#nextBtn')) { nextCard(); return; }
+      if (e.target.closest('#speakBtn')) { const lang = activeLanguage(); const card = currentCard(); if (card && lang) speakText(card.word, lang.speechLang); return; }
+      if (e.target.closest('#toggleLearnedBtn')) { const card = currentCard(); if (card) toggleLearned(card.id); return; }
+      if (e.target.closest('#exportJsonBtn')) { exportJson(); return; }
+      if (e.target.closest('#exportTxtBtn')) { exportTxt(); return; }
+      if (e.target.closest('#shuffleBtn')) { shuffleCards(); return; }
+      if (e.target.closest('#resetBtn')) { resetLanguage(); return; }
+      if (e.target.closest('#bulkAddBtn')) { addBulkCards(); return; }
+      if (e.target.closest('#clearTemplateBtn')) { const lang = activeLanguage(); if (lang) { lang.bulkTemplate = `${lang.frontLanguage}\t${lang.backLanguage}\tТема (Категория)`; render(); } return; }
+      if (e.target.closest('#checkAnswerBtn')) { checkTypedAnswer(); return; }
+      if (e.target.closest('#showAnswerBtn')) { revealTypedAnswer(); return; }
+
+      const rateBtn = e.target.closest('[data-rate]');
+      if (rateBtn) { rateCard(Number(rateBtn.dataset.rate)); return; }
+      const speakCard = e.target.closest('[data-speak-card]');
+      if (speakCard) { const card = activeLanguage()?.cards.find(c => c.id === speakCard.dataset.speakCard); if (card) speakText(card.word, activeLanguage().speechLang); return; }
+      const toggleCardBtn = e.target.closest('[data-toggle-card]');
+      if (toggleCardBtn) { toggleLearned(toggleCardBtn.dataset.toggleCard); return; }
+      const deleteCardBtn = e.target.closest('[data-delete-card]');
+      if (deleteCardBtn) { deleteCard(deleteCardBtn.dataset.deleteCard); return; }
+    });
+
+    $('addLanguageForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = $('newLanguageName').value.trim();
+      const front = $('newFrontLanguage').value.trim();
+      const back = $('newBackLanguage').value.trim();
+      const speech = $('newSpeechLang').value;
+      if (!name || !front || !back) return;
+      const language = normalizeLanguage({ name, frontLanguage: front, backLanguage: back, speechLang: speech, bulkTemplate: `${front}\t${back}\tТема (Категория)`, cards: [] });
+      state.languages.push(language);
+      state.ui.activeLanguageId = language.id;
+      $('newLanguageName').value = '';
+      $('newFrontLanguage').value = '';
+      $('newBackLanguage').value = '';
+      $('newSpeechLang').value = 'en-US';
+      state.ui.showLanguageManager = false;
+      setMessage('Языковой набор добавлен.');
+      render();
+    });
+
+    $('addCardForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const lang = activeLanguage();
+      if (!lang) return;
+      const word = $('wordInput').value.trim();
+      const translation = $('translationInput').value.trim();
+      const notes = $('notesInput').value.trim();
+      if (!word || !translation) return;
+      lang.cards.unshift(createCard(word, translation, notes));
+      $('wordInput').value = '';
+      $('translationInput').value = '';
+      $('notesInput').value = '';
+      setMessage('Карточка добавлена.');
+      render();
+    });
+
+    $('importFile').addEventListener('change', (e) => {
+      const lang = activeLanguage();
+      const file = e.target.files?.[0];
+      if (!lang || !file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const text = String(reader.result);
+          if (file.name.endsWith('.json')) {
+            const data = JSON.parse(text);
+            if (!Array.isArray(data)) throw new Error();
+            lang.cards = data.filter(item => item.word && item.translation).map(normalizeCard);
+          } else {
+            const parsed = parseBulkInput(text);
+            if (!parsed.length) throw new Error();
+            lang.cards = parsed;
+          }
+          resetStudyState();
+          setMessage(`Импортировано карточек: ${lang.cards.length}`);
+          render();
+        } catch {
+          setMessage('Не удалось импортировать файл.', 'error');
+        }
+      };
+      reader.readAsText(file);
+      e.target.value = '';
+    });
+
+    $('statusFilter').addEventListener('change', (e) => { state.ui.filter = e.target.value; $('dbStatusFilter').value = e.target.value; resetStudyState(); render(); });
+    $('dbStatusFilter').addEventListener('change', (e) => { state.ui.filter = e.target.value; $('statusFilter').value = e.target.value; resetStudyState(); render(); });
+    $('categoryFilter').addEventListener('change', (e) => { state.ui.categoryFilter = e.target.value; $('dbCategoryFilter').value = e.target.value; resetStudyState(); render(); });
+    $('dbCategoryFilter').addEventListener('change', (e) => { state.ui.categoryFilter = e.target.value; $('categoryFilter').value = e.target.value; resetStudyState(); render(); });
+    $('sortBySelect').addEventListener('change', (e) => { state.ui.sortBy = e.target.value; render(); });
+    $('searchInput').addEventListener('input', (e) => { state.ui.search = e.target.value; render(); });
+    $('studyModeSelect').addEventListener('change', (e) => { state.ui.studyMode = e.target.value; state.ui.isFlipped = false; state.ui.answerFeedback = null; state.ui.answerInput = ''; render(); });
+    $('speechLangSelect').addEventListener('change', (e) => { const lang = activeLanguage(); if (lang) { lang.speechLang = e.target.value; render(); } });
+    $('frontSideSelect').addEventListener('change', (e) => {
+      const lang = activeLanguage();
+      if (!lang || e.target.value === 'front') return;
+      [lang.frontLanguage, lang.backLanguage] = [lang.backLanguage, lang.frontLanguage];
+      lang.cards = lang.cards.map(card => ({ ...card, word: card.translation, translation: card.word }));
+      lang.bulkTemplate = `${lang.frontLanguage}\t${lang.backLanguage}\tТема (Категория)`;
+      state.ui.answerInput = '';
+      state.ui.answerFeedback = null;
+      state.ui.isFlipped = false;
+      render();
+    });
+    $('answerInput').addEventListener('input', (e) => { state.ui.answerInput = e.target.value; save(); });
+    $('bulkTextarea').addEventListener('input', (e) => { const lang = activeLanguage(); if (lang) { lang.bulkTemplate = e.target.value; save(); } });
+
+    function prevCard() { const cards = studyCards(); if (!cards.length) return; state.ui.studyIndex = (state.ui.studyIndex - 1 + cards.length) % cards.length; state.ui.isFlipped = false; state.ui.answerInput=''; state.ui.answerFeedback=null; render(); }
+    function nextCard() { const cards = studyCards(); if (!cards.length) return; state.ui.studyIndex = (state.ui.studyIndex + 1) % cards.length; state.ui.isFlipped = false; state.ui.answerInput=''; state.ui.answerFeedback=null; render(); }
+    function toggleLearned(id) { const lang = activeLanguage(); if (!lang) return; lang.cards = lang.cards.map(c => c.id === id ? { ...c, learned: !c.learned } : c); render(); }
+    function deleteCard(id) { const lang = activeLanguage(); if (!lang) return; lang.cards = lang.cards.filter(c => c.id !== id); resetStudyState(); setMessage('Карточка удалена.'); render(); }
+    function shuffleCards() { const lang = activeLanguage(); if (!lang) return; const pool = [...lang.cards]; for (let i=pool.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [pool[i],pool[j]]=[pool[j],pool[i]]; } lang.cards = pool; resetStudyState(); render(); }
+    function resetLanguage() { const lang = activeLanguage(); if (!lang) return; const fallback = DEFAULT_LANGUAGES.find(l => l.id === lang.id); if (fallback) Object.assign(lang, normalizeLanguage(fallback)); else lang.cards = []; state.ui.categoryFilter = ALL_CATEGORIES; state.ui.search=''; resetStudyState(); setMessage('Активный набор сброшен.'); render(); }
+    function addBulkCards() { const lang = activeLanguage(); if (!lang) return; const parsed = parseBulkInput(lang.bulkTemplate || ''); if (!parsed.length) return setMessage('Не удалось распознать данные.', 'error'); lang.cards = [...parsed.map(item => createCard(item.word, item.translation, item.notes)), ...lang.cards]; resetStudyState(); setMessage(`Добавлено карточек: ${parsed.length}`); render(); }
+    function checkTypedAnswer() { const card = currentCard(); if (!card) return; const ok = normalizeAnswer(state.ui.answerInput) === normalizeAnswer(card.translation) && normalizeAnswer(state.ui.answerInput).length > 0; state.ui.answerFeedback = { isCorrect: ok, expected: card.translation }; render(); }
+    function revealTypedAnswer() { const card = currentCard(); if (!card) return; state.ui.answerFeedback = { isCorrect: false, expected: card.translation }; render(); }
+    function rateCard(quality) { const card = currentCard(); const lang = activeLanguage(); if (!card || !lang) return; lang.cards = lang.cards.map(c => c.id === card.id ? calculateSpacedRepetition(c, quality) : c); nextCard(); }
+    function speakText(text, lang) { if (!('speechSynthesis' in window) || !text) return; window.speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text); u.lang = lang || 'en-US'; u.rate = 0.95; window.speechSynthesis.speak(u); }
+    function exportJson() { const lang = activeLanguage(); if (!lang) return; const blob = new Blob([JSON.stringify(lang.cards, null, 2)], { type: 'application/json' }); downloadBlob(blob, `${slugify(lang.name)}-flashcards.json`); }
+    function exportTxt() { const lang = activeLanguage(); if (!lang) return; const header = [lang.frontLanguage, lang.backLanguage, 'Тема (Категория)'].join('\t'); const lines = lang.cards.map(c => [c.word, c.translation, c.notes || ''].join('\t')); const blob = new Blob([[header, ...lines].join('\n')], { type: 'text/plain;charset=utf-8' }); downloadBlob(blob, `${slugify(lang.name)}-flashcards.txt`); }
+    function downloadBlob(blob, name) { const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = name; a.click(); URL.revokeObjectURL(url); }
+    function slugify(str) { return String(str).toLowerCase().replace(/\s+/g, '-').replace(/[^a-zа-яё0-9\-]+/gi, ''); }
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => navigator.serviceWorker.register('./service-worker.js').catch(() => {}));
+    }
+
+    render();
+  </script>
+</body>
+</html>
